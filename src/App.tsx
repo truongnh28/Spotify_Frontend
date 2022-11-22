@@ -1,6 +1,10 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Stack } from '@mui/material';
+import Logo from './components/Logo';
+import Home from './components/Home';
+import Search from './components/Search';
+import Library from './components/Library';
 
 const darkTheme = createTheme({
   palette: {
@@ -16,9 +20,13 @@ function App() {
         <Grid item xs={2}>
           <Box sx={{
             pt: 3,
-            px: 3
           }}>
-            This is sidebar
+            <Stack spacing={1}>
+              <Logo />
+              <Home />
+              <Search />
+              <Library />
+            </Stack>
           </Box>
         </Grid>
         <Grid item xs={10}>

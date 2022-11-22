@@ -1,18 +1,21 @@
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import BottomSidebar from "./BottomSidebar";
+import Logo from "./Logo";
+import TopSidebar from "./TopSidebar";
 
 export default function SideBar() {
   return (
-    <Box
-      sx={{
-        width: "300px",
-        height: "100%",
-        backgroundColor: "black",
-        color: "text.primary",
-      }}
-    >
-      Home
-      <br />
-      
+    <Box sx={{
+      pt: 3,
+      backgroundColor: "#000000"
+    }}>
+      <Stack spacing={2}>
+        <Logo />
+        <Stack spacing={4}>
+          <TopSidebar />
+          <BottomSidebar />
+        </Stack>
+      </Stack>
     </Box>
   );
 }

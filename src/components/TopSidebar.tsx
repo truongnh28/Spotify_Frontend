@@ -26,8 +26,8 @@ const icons = [
 
 export default function TopSidebar() {
   const menuItems = icons.map((icon) => {
-    return <SidebarItem type={icon.icon} name={icon.name} title={icon.title} />
-  })
+    return <SidebarItem key={icon.name} type={icon.icon} name={icon.name} title={icon.title} />
+  });
   return (
     <Box>
       <Stack spacing={2}>

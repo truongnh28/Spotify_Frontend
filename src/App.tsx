@@ -2,9 +2,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Grid, Stack } from '@mui/material';
 import Logo from './components/Logo';
-import Home from './components/Home';
-import Search from './components/Search';
-import Library from './components/Library';
+import TopSidebar from './components/TopSidebar';
+import BottomSidebar from './components/BottomSidebar';
 
 const darkTheme = createTheme({
   palette: {
@@ -21,11 +20,12 @@ function App() {
           <Box sx={{
             pt: 3,
           }}>
-            <Stack spacing={1}>
+            <Stack spacing={2}>
               <Logo />
-              <Home />
-              <Search />
-              <Library />
+              <Stack spacing={4}>
+                <TopSidebar />
+                <BottomSidebar />
+              </Stack>
             </Stack>
           </Box>
         </Grid>

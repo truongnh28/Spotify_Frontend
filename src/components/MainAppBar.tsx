@@ -5,8 +5,10 @@ export default function MainAppBar() {
     <AppBar sx={{
       bgcolor: "#101010",
       py: 1,
-      backgroundImage: "linear-gradient(#101010, #0f0f0f)"
-    }} position="sticky">
+      pr: 2,
+      backgroundImage: "linear-gradient(#101010, #0f0f0f)",
+      position: "sticky",
+    }}>
       <Stack direction="row" 
         justifyContent="flex-end" 
         alignItems={"center"}

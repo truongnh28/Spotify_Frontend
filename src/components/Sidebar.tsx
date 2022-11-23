@@ -7,8 +7,9 @@ export default function SideBar() {
   return (
     <Box sx={{
       pt: 3,
-      backgroundColor: "#000000"
-    }}>
+      backgroundColor: "#000000",
+      position: "sticky",
+    }} >
       <Stack spacing={2}>
         <Logo />
         <Stack spacing={4}>

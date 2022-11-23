@@ -4,7 +4,7 @@ export default function Logo() {
   return (
     <Box sx={{
       px: 3,
-      mb: 2
+      mb: 2,
     }}>
       <SpotifyLogo />
     </Box>

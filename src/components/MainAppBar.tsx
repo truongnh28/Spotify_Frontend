@@ -1,4 +1,4 @@
-import { AppBar, Button, Divider, Link, Stack, Typography } from "@mui/material";
+import { AppBar, Button, Link, Stack, Typography } from "@mui/material";
 
 export default function MainAppBar() {
     return (

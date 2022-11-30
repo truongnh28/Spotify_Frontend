@@ -1,22 +1,14 @@
-import { Box, createTheme, CssBaseline, Grid, Stack, ThemeProvider, Typography } from "@mui/material";
-import Main from "./components/Main";
-import SideBar from "./components/Sidebar";
-
-const darkTheme = createTheme({
-    palette: {
-        mode: "dark"
-    }
-});
-
+import { BrowserRouter, Routes, Route} from "react-router-dom";
+import Home from "./pages/home";
 function App() {
     return (
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
-            <Stack direction="row" bgcolor="black">
-                <SideBar />
-                <Main />
-            </Stack>
-        </ThemeProvider>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Home />}>
+                    <Route index element={<Home />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 }
 

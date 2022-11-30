@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import MainAppBar from "./MainAppBar";
 import MainContent from "./MainContent";
 

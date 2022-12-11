@@ -2,9 +2,9 @@ import { Button, Stack, Typography } from "@mui/material";
 
 export default function CardMusic() {
     const data = {
-        imgSrc: "https://i.scdn.co/image/ab67706f00000002b9c1ff6dac384a87747d5f48",
-        title: "Today's Top Hits",
-        description: "Sam Smith & Kim Petras are on top of the Hottest 50!",
+        imgSrc: "https://i.scdn.co/image/ab67706f00000002ca5a7517156021292e5663a6",
+        title: "Peaceful Piano",
+        description: "Relax and indulge with beautiful piano pieces",
     }
     return (
         <Button sx={{

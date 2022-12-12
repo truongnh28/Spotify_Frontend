@@ -1,7 +1,7 @@
 import { CardMedia, CssBaseline, ThemeProvider } from "@mui/material";
 import { Stack } from "@mui/system";
 import SideBar from "../../components/Nav";
-import darkTheme from "../../consts/UI";
+import darkTheme from "../../constants/UI";
 import MainUser from "./components/MainUser";
 
 

@@ -25,9 +25,9 @@ const styleTextLogin = {
 };
 
 const styleButtonSignup = {
-    bgcolor: "black",
+    bgcolor: "#0f0f0f",
     "&:hover": {
-        backgroundColor: "black",
+        backgroundColor: "#0f0f0f",
         transform: "scale(1.05)"
     }
 }

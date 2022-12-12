@@ -4,10 +4,11 @@ interface dataOfCardMusic {
     imgSrc: string;
     title: string;
     description: string;
+    type: string
 }
 
 export default function CardMusic(props: dataOfCardMusic) {
-    const {imgSrc, title, description } = props;
+    const {imgSrc, title, description, type } = props;
     return (
         <Button sx={{
             backgroundColor: "#161616",

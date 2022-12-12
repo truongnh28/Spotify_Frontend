@@ -1,18 +1,10 @@
 import { Box, List, Stack, Typography } from "@mui/material";
-import logo from "../assets/Spotify_logo.png";
+import logo from "../assets/spotify-logo.png";
 import { Link } from "react-router-dom";
-import HomeIcon from '@mui/icons-material/Home';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
-import LibraryMusicOutlinedIcon from '@mui/icons-material/LibraryMusicOutlined';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-
-interface LinkItemProps {
-    icon?: React.ReactElement;
-    primary: string;
-    to: string;
-    current?: boolean;
-}
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { FIRST_NAV, SECOND_NAV } from "../constants/UI";
+import { setCurrentPage } from "../features/current/currentSlice";
+import { forwardRef } from "react";
 
 const style = {
     color: "gray",
@@ -22,21 +14,62 @@ const style = {
     }
 };
 
-const LinkItem = (props: LinkItemProps) => {
-    const { icon, primary, to, current } = props;
-    return (
-        <li>    
-            <Link to={to} style={{textDecoration: "none"}}>
-                <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={current ? {...style, color: "white"}: style}>
-                    {icon}
-                    <Typography><b>{primary}</b></Typography>
-                </Stack>
-            </Link>
-        </li>
-    )
+interface LinkItemProps {
+    to: string;
+    name: string;
+    onClick: any;
+    icon: any;
+    isCurrent: boolean
 }
 
+const LinkItem = (props: LinkItemProps) => {
+    const { to, name, onClick, icon, isCurrent } = props;
+    return (
+        <Link to={to} style={{ textDecoration: "none" }} onClick={onClick}>
+            <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={isCurrent ? { ...style, color: "white" } : style}>
+                {icon}
+                <Typography><b>{name}</b></Typography>
+            </Stack>
+        </Link>
+    );
+};
+
 const Nav = () => {
+    const dispatch = useAppDispatch();
+    const currentPage = useAppSelector(state => state.current.page);
+    const user = useAppSelector(state => state.user.user);
+    const isLoggedIn = user !== null;
+
+    const onClickUserHandle = (page: string) => {
+        dispatch(setCurrentPage(page));
+    }
+
+    const renderedFirstNav = FIRST_NAV.map(navItem => {
+        const isCurrent = currentPage === navItem.name;
+        const icon = isCurrent ? navItem.icon.current : navItem.icon.notCurrent;
+        const changePathAndBlockEvent = (!isLoggedIn && navItem.name === "Your Library");
+        let to = navItem.link;
+        if (changePathAndBlockEvent) {
+            to = "/login";
+        }
+        return (
+            <li key={navItem.name}>
+                <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={icon} onClick={changePathAndBlockEvent ? undefined : (() => onClickUserHandle(navItem.name))} />
+            </li>
+        )
+    });
+    const renderedSecondNav = SECOND_NAV.map(navItem => {
+        const isCurrent = currentPage === navItem.name;
+        let to = navItem.link;
+        if (!isLoggedIn) {
+            to = "/login";
+        }
+        return (
+            <li key={navItem.name}>
+                <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={navItem.icon} onClick={!isLoggedIn ? undefined : (() => onClickUserHandle(navItem.name))} />
+            </li>
+        );
+    })
     return (
         <Stack height="100%" bgcolor="black">
             <Stack paddingTop={3} height="100%" justifyContent="space-between">
@@ -47,13 +80,10 @@ const Nav = () => {
                         </Link>
                     </Box>
                     <List disablePadding>
-                        <LinkItem icon={<HomeIcon />} to="/" primary="Home" current />
-                        <LinkItem icon={<SearchOffIcon />} to="/search" primary="Search"/>
-                        <LinkItem icon={<LibraryMusicOutlinedIcon />} to="#" primary="Your Library"/>
+                        {renderedFirstNav}
                     </List>
-                    <List disablePadding sx={{mt: 3}}>
-                        <LinkItem icon={<AddBoxIcon />} to="#" primary="Create Playlist" />
-                        <LinkItem icon={<FavoriteIcon />} to="#" primary="Liked Songs"/>
+                    <List disablePadding sx={{ mt: 3 }}>
+                        {renderedSecondNav}
                     </List>
                 </Box>
             </Stack>

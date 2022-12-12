@@ -1,12 +1,12 @@
 import { Box } from "@mui/material";
-import MainContent from "../../../components/MainContent";
+import Content from "../../../components/Content";
 import AppBarSearch from "./AppBarSearch";
 
 export default function HomeMain() {
     return (
         <Box marginLeft="233px">
             <AppBarSearch />
-            <MainContent />
+            <Content />
         </Box>
     );
 }

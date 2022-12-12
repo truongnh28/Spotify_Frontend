@@ -1,17 +1,21 @@
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { BrowserRouter, Routes, Route} from "react-router-dom";
+import darkTheme from "./consts/UI";
 import Home from "./pages/home";
-import HomeUser from "./pages/home-user";
 import Login from "./pages/login";
 import SignUp from "./pages/signup";
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<HomeUser />} />
-                <Route path="/login" element={<Login />}/>
-                <Route path="/signup" element={<SignUp /> }/>
-            </Routes>
-        </BrowserRouter>
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />}/>
+                    <Route path="/signup" element={<SignUp /> }/>
+                </Routes>
+            </BrowserRouter>
+        </ThemeProvider>
     );
 }
 

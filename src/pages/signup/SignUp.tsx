@@ -6,7 +6,6 @@ const SignUp = () => {
     return (
         <Stack spacing={2} alignItems="center">
             <Stack height="68px" width="100%" justifyContent="center" spacing={2}>
-                <SpotifyLogo height="56px" />
                 <Stack border="solid 1px lightgray" />
             </Stack>
             <Stack alignItems="center" width="480px" spacing={2}>

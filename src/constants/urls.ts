@@ -1,0 +1,2 @@
+export const LOGIN = "http://13.215.228.202:8080/api/v1/authen/login";
+export const COOKIE = "spotify=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoie1widXNlcm5hbWVcIjpcInRydW9uZ25oM1wiLFwiY29kZVwiOlwiZWE5Y2I4MmMtOGU5Ni00MDYxLTljZTgtYmJkZjQ0YjY5ZTI2XCJ9IiwiZXhwIjoxNjg4MjMzNzgzfQ.qN2K74pbVL0j_RpcP2DxPM3HLDRj4LbvmJ0DMCNgN3s";

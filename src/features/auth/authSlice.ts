@@ -1,22 +1,47 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 import { RootState } from "../../app/store";
+import { COOKIE, LOGIN } from "../../constants/urls";
+import { userLogin } from "../../models/userLogin";
 
-interface authState {
-    user: string | null;
-}
+const initialState = {
+    account: {
+        username: "",
+        code: "",
+    },
+    error: null,
+} as userLogin;
+
+export const loginSpotify = createAsyncThunk("auth/login", async ({ username, password }: { username: string, password: string }) => {
+    const response = await axios.post(LOGIN, {username, password}, {
+        withCredentials: true,
+        headers: {
+            Cookie: "cookie1=value",
+        },
+    });
+    return response.data;
+})
 
 const authSlice = createSlice({
     name: "auth",
-    initialState: {
-        user: null
-    } as authState,
+    initialState,
     reducers: {
         login: (state, action) => {
-            state.user = action.payload;
+            state = action.payload;
         },
-        logout: (state, action) => {
-            state.user = null;
+        logout: (state) => {
+            state.account.username = "";
+            state.account.code = "";
         }
+    },
+    extraReducers(builder) {
+        builder
+            .addCase(loginSpotify.fulfilled, (state, action) => {
+                console.log(action.payload);
+            })
+            .addCase(loginSpotify.rejected, (state, action) => {
+                state.error = action.error.message?.toString();
+            })
     },
 });
 
@@ -24,4 +49,4 @@ export default authSlice.reducer;
 
 export const { login, logout } = authSlice.actions;
 
-export const selectUser = (state: RootState) => state.user.user;
+export const selectUser = (state: RootState) => state.user;

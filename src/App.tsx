@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route} from "react-router-dom";
 import darkTheme from "./constants/UI";
 import Home from "./features/home/Home";
 import Search from "./features/search/Search";
-import Login from "./pages/login";
+import Login from "./features/login/Login";
 import SignUp from "./pages/signup";
 function App() {
     return (

@@ -1,4 +1,4 @@
-import { Box, List, Stack, Typography } from "@mui/material";
+import { Box, List, Stack, Tooltip, Typography } from "@mui/material";
 import logo from "../assets/spotify-logo.png";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
@@ -22,17 +22,19 @@ interface LinkItemProps {
     isCurrent: boolean
 }
 
-const LinkItem = (props: LinkItemProps) => {
+const LinkItem = forwardRef<any, LinkItemProps>((props: LinkItemProps, ref) => {
     const { to, name, onClick, icon, isCurrent } = props;
     return (
-        <Link to={to} style={{ textDecoration: "none" }} onClick={onClick}>
-            <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={isCurrent ? { ...style, color: "white" } : style}>
-                {icon}
-                <Typography><b>{name}</b></Typography>
-            </Stack>
-        </Link>
+        <div {...props} ref={ref}>
+            <Link to={to} style={{ textDecoration: "none" }} onClick={onClick}>
+                <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={isCurrent ? { ...style, color: "white" } : style}>
+                    {icon}
+                    <Typography><b>{name}</b></Typography>
+                </Stack>
+            </Link>
+        </div>
     );
-};
+});
 
 const Nav = () => {
     const dispatch = useAppDispatch();
@@ -54,7 +56,9 @@ const Nav = () => {
         }
         return (
             <li key={navItem.name}>
-                <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={icon} onClick={changePathAndBlockEvent ? undefined : (() => onClickUserHandle(navItem.name))} />
+                <Tooltip title="Hello World" arrow placement="right-start">
+                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={icon} onClick={changePathAndBlockEvent ? undefined : (() => onClickUserHandle(navItem.name))} />
+                </Tooltip>
             </li>
         )
     });

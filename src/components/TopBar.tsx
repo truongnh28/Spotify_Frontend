@@ -1,4 +1,8 @@
-import { AppBar, Button, Stack, Typography } from "@mui/material";
+import { AppBar, Button, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { useAppSelector } from "../app/hooks";
+import { selectUser } from "../features/auth/authSlice";
+import { selectCurrentPage } from "../features/current/currentSlice";
+import SearchIcon from '@mui/icons-material/Search';
 
 const styleAppBar = {
     height: "64px",
@@ -38,16 +42,43 @@ const styleTextSignup = {
     fontWeight: "bold",
 }
 
+const styleSearchInput = {
+
+}
+
 export default function TopBar() {
+    const user = useAppSelector(selectUser);
+    const currentPage = useAppSelector(selectCurrentPage);
+    const isLoggedIn = user !== null;
+    const isSearchPage = currentPage === "Search";
+    let renderedSearchInput = null;
+    if (isSearchPage) {
+        renderedSearchInput = (
+            <TextField
+                variant="standard" 
+                placeholder="What do you want to listen to?"
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    ),
+                }}
+            />
+        );
+    }
     return (
         <AppBar sx={styleAppBar}>
-            <Stack direction="row" paddingX={4} paddingY={2} justifyContent="flex-end" alignItems="center" spacing={3}>
-                <Button href="/signup" sx={styleButtonSignup}>
-                    <Typography sx={styleTextSignup}>Sign up</Typography>
-                </Button>
-                <Button href="/login" sx={styleButtonLogin}>
-                    <Typography sx={styleTextLogin}>Log in</Typography>
-                </Button>
+            <Stack direction="row" paddingX={4} paddingY={2} justifyContent="space-between" alignItems="center" spacing={3}>
+                {renderedSearchInput}
+                <div>
+                    <Button href="/signup" sx={styleButtonSignup}>
+                        <Typography sx={styleTextSignup}>Sign up</Typography>
+                    </Button>
+                    <Button href="/login" sx={styleButtonLogin}>
+                        <Typography sx={styleTextLogin}>Log in</Typography>
+                    </Button>
+                </div>
             </Stack>
         </AppBar>
     );

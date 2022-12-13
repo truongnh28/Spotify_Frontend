@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../../app/store";
 
 interface currentPageState {
     page: string;
@@ -19,3 +20,5 @@ export const currentSlice = createSlice({
 export const { setCurrentPage } = currentSlice.actions;
 
 export default currentSlice.reducer;
+
+export const selectCurrentPage = (state: RootState) => state.current.page;

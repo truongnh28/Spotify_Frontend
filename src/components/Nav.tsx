@@ -3,8 +3,9 @@ import logo from "../assets/spotify-logo.png";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { FIRST_NAV, SECOND_NAV } from "../constants/UI";
-import { setCurrentPage } from "../features/current/currentSlice";
+import { selectCurrentPage, setCurrentPage } from "../features/current/currentSlice";
 import { forwardRef } from "react";
+import { selectUser } from "../features/auth/authSlice";
 
 const style = {
     color: "gray",
@@ -38,8 +39,8 @@ const LinkItem = forwardRef<any, LinkItemProps>((props: LinkItemProps, ref) => {
 
 const Nav = () => {
     const dispatch = useAppDispatch();
-    const currentPage = useAppSelector(state => state.current.page);
-    const user = useAppSelector(state => state.user.user);
+    const currentPage = useAppSelector(selectCurrentPage);
+    const user = useAppSelector(selectUser);
     const isLoggedIn = user !== null;
 
     const onClickUserHandle = (page: string) => {
@@ -56,7 +57,7 @@ const Nav = () => {
         }
         return (
             <li key={navItem.name}>
-                <Tooltip title="Hello World" arrow placement="right-start">
+                <Tooltip title={changePathAndBlockEvent ? "You must log in first" : null} arrow placement="right-start">
                     <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={icon} onClick={changePathAndBlockEvent ? undefined : (() => onClickUserHandle(navItem.name))} />
                 </Tooltip>
             </li>
@@ -70,7 +71,9 @@ const Nav = () => {
         }
         return (
             <li key={navItem.name}>
-                <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={navItem.icon} onClick={!isLoggedIn ? undefined : (() => onClickUserHandle(navItem.name))} />
+                <Tooltip title={!isLoggedIn ? "You must log in first" : null} arrow placement="right-start">
+                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={navItem.icon} onClick={!isLoggedIn ? undefined : (() => onClickUserHandle(navItem.name))} />
+                </Tooltip>
             </li>
         );
     })

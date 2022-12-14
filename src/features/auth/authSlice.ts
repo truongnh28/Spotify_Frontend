@@ -16,7 +16,7 @@ export const loginSpotify = createAsyncThunk("auth/login", async ({ username, pa
     const response = await axios.post(LOGIN, { username, password }, {
         withCredentials: true,
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            "Content-Type": "application/x-www-form-urlencoded",
         }
     });
     return response.headers;

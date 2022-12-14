@@ -1,14 +1,13 @@
 import { Button, Stack, Typography } from "@mui/material";
 
-interface dataOfCardMusic {
+interface playlistProps {
     imgSrc: string;
     title: string;
     description: string;
-    type: string
 }
 
-export default function CardMusic(props: dataOfCardMusic) {
-    const {imgSrc, title, description, type } = props;
+export default function Playlist(props: playlistProps) {
+    const {imgSrc, title, description } = props;
     return (
         <Button sx={{
             backgroundColor: "#161616",

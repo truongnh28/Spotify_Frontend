@@ -5,7 +5,11 @@ import Home from "./features/home/Home";
 import Search from "./features/search/Search";
 import Login from "./features/login/Login";
 import SignUp from "./pages/signup";
+import { useAppSelector } from "./app/hooks";
+import { selectUser } from "./features/auth/authSlice";
 function App() {
+    const user = useAppSelector(selectUser);
+    const isLoggedIn = user.username.length > 0 && user.code.length > 0;
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
@@ -15,8 +19,8 @@ function App() {
                     <Route path="/search" element={<Search />} />
                     <Route path="/collection/playlist" element={<Home />} />
                     <Route path="/collection/tracks" element={<Home />}/>
-                    <Route path="/login" element={<Login />}/>
-                    <Route path="/signup" element={<SignUp /> }/>
+                    { !isLoggedIn && <Route path="/login" element={ <Login />}/>}
+                    { !isLoggedIn && <Route path="/signup" element={ <SignUp /> }/>}
                 </Routes>
             </BrowserRouter>
         </ThemeProvider>

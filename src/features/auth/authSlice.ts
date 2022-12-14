@@ -13,21 +13,21 @@ const initialState = {
 } as userLogin;
 
 export const loginSpotify = createAsyncThunk("auth/login", async ({ username, password }: { username: string, password: string }) => {
-    const response = await axios.post(LOGIN, {username, password}, {
+    const response = await axios.post(LOGIN, { username, password }, {
         withCredentials: true,
         headers: {
-            Cookie: "cookie1=value",
-        },
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
     });
-    return response.data;
+    return response.headers;
 })
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        login: (state, action) => {
-            state = action.payload;
+        login: (state, action: PayloadAction<{username: string; code: string}>) => {
+            state.account = action.payload;
         },
         logout: (state) => {
             state.account.username = "";
@@ -49,4 +49,4 @@ export default authSlice.reducer;
 
 export const { login, logout } = authSlice.actions;
 
-export const selectUser = (state: RootState) => state.user;
+export const selectUser = (state: RootState) => state.user.account;

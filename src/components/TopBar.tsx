@@ -1,7 +1,6 @@
 import { AppBar, Button, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout, selectUser } from "../features/auth/authSlice";
-import { selectCurrentPage, setCurrentPage } from "../features/current/currentSlice";
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -55,11 +54,10 @@ const styleButtonUser = {
     }
 }
 
-export default function TopBar() {
+export default function TopBar({ currentPage } : { currentPage: string}) {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
     const handleClickUser = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -68,13 +66,12 @@ export default function TopBar() {
         if (wantLogout) {
             dispatch(logout());
             navigate("/");
-            dispatch(setCurrentPage("Home"));
         }
     }
     const user = useAppSelector(selectUser);
-    const currentPage = useAppSelector(selectCurrentPage);
-    const isLoggedIn = user.account.username !== null && user.account.code !== null;
+    const isLoggedIn = user.username.length > 0 && user.code.length > 0;
     const isSearchPage = currentPage === "Search";
+    const open = Boolean(anchorEl);
     let renderedSearchInput = null;
     if (isSearchPage) {
         renderedSearchInput = (
@@ -97,10 +94,10 @@ export default function TopBar() {
         renderedUserButton = (
             <div>
                 <Button sx={styleButtonUser} startIcon={<AccountCircleIcon />} endIcon={<ExpandMoreIcon />} onClick={handleClickUser}>
-                    NhatThanh
+                    {user.username}
                 </Button>
                 <Menu anchorEl={anchorEl} open={open} onClose={handleCloseUser}>
-                    <MenuItem href={`/user/${user.account.code}`} onClick={() => handleCloseUser(false)}>Profile</MenuItem>
+                    <MenuItem href={`/user/${user.code}`} onClick={() => handleCloseUser(false)}>Profile</MenuItem>
                     <MenuItem onClick={() => handleCloseUser(true)}>Logout</MenuItem>
                 </Menu>
             </div>

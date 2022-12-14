@@ -1,9 +1,8 @@
 import { Box, List, Stack, Tooltip, Typography } from "@mui/material";
 import logo from "../assets/spotify-logo.png";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppSelector } from "../app/hooks";
 import { FIRST_NAV, SECOND_NAV } from "../constants/UI";
-import { selectCurrentPage, setCurrentPage } from "../features/current/currentSlice";
 import { forwardRef } from "react";
 import { selectUser } from "../features/auth/authSlice";
 
@@ -18,16 +17,15 @@ const style = {
 interface LinkItemProps {
     to: string;
     name: string;
-    onClick: any;
     icon: any;
     isCurrent: boolean
 }
 
 const LinkItem = forwardRef<any, LinkItemProps>((props: LinkItemProps, ref) => {
-    const { to, name, onClick, icon, isCurrent } = props;
+    const { to, name, icon, isCurrent } = props;
     return (
         <div {...props} ref={ref}>
-            <Link to={to} style={{ textDecoration: "none" }} onClick={onClick}>
+            <Link to={to} style={{ textDecoration: "none" }}>
                 <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={isCurrent ? { ...style, color: "white" } : style}>
                     {icon}
                     <Typography><b>{name}</b></Typography>
@@ -37,16 +35,9 @@ const LinkItem = forwardRef<any, LinkItemProps>((props: LinkItemProps, ref) => {
     );
 });
 
-const Nav = () => {
-    const dispatch = useAppDispatch();
-    const currentPage = useAppSelector(selectCurrentPage);
+const Nav = ({ currentPage }: { currentPage: string}) => {
     const user = useAppSelector(selectUser);
-    const isLoggedIn = user !== null;
-
-    const onClickUserHandle = (page: string) => {
-        dispatch(setCurrentPage(page));
-    }
-
+    const isLoggedIn = user.username.length > 0 && user.code.length > 0;
     const renderedFirstNav = FIRST_NAV.map(navItem => {
         const isCurrent = currentPage === navItem.name;
         const icon = isCurrent ? navItem.icon.current : navItem.icon.notCurrent;
@@ -58,7 +49,7 @@ const Nav = () => {
         return (
             <li key={navItem.name}>
                 <Tooltip title={changePathAndBlockEvent ? "You must log in first" : null} arrow placement="right-start">
-                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={icon} onClick={changePathAndBlockEvent ? undefined : (() => onClickUserHandle(navItem.name))} />
+                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={icon} />
                 </Tooltip>
             </li>
         )
@@ -72,7 +63,7 @@ const Nav = () => {
         return (
             <li key={navItem.name}>
                 <Tooltip title={!isLoggedIn ? "You must log in first" : null} arrow placement="right-start">
-                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={navItem.icon} onClick={!isLoggedIn ? undefined : (() => onClickUserHandle(navItem.name))} />
+                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={navItem.icon} />
                 </Tooltip>
             </li>
         );

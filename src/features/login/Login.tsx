@@ -1,8 +1,10 @@
 import { Stack, Typography, TextField, Button, Modal, Box } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import logo from "../../assets/spotify-logo.png";
-import { loginSpotify } from "../auth/authSlice";
+import { CODE, PASSWORD, USERNAME } from "../../constants/data";
+import { login } from "../auth/authSlice";
 
 const styleModal = {
     position: 'absolute' as 'absolute',
@@ -18,6 +20,7 @@ const styleModal = {
 
 const Login = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -42,20 +45,16 @@ const Login = () => {
         setPassword(currentPassword);
     }
     
-    const handleLogin = async () => {
-        try {
-            await dispatch(loginSpotify({username: username, password: password})).unwrap();
-            setUsername("");
-            setPassword("");
-            setUsernameError(false);
-            setPasswordError(false);
-        } catch(err: any) {
-            console.log(err);
+    const handleLogin = () => {
+        if (username === USERNAME && password === PASSWORD) {
+            dispatch(login({username: username, code: CODE}));
+            
+            navigate("/");
+        } else {
             setOpen(true);
         }
     }
     const handleClose = () => setOpen(false);
-
     const canPressed = (username !== null && username.length > 0) && (password !== null && password.length > 0);
     return (
         <Stack spacing={2} alignItems="center">

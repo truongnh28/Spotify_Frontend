@@ -7,10 +7,10 @@ const Search = () => {
     return (
         <Grid direction="row" container height="100%">
             <Grid item position="fixed" width="203px" height="100%">
-                <Nav />
+                <Nav currentPage="Search" />
             </Grid>
             <Grid item marginLeft="203px" height="100%" width="100%">
-                <TopBar />
+                <TopBar currentPage="Search" />
                 <Content />
             </Grid>
             <AppBar position="fixed" style={{ top: "calc(100% - 24px)", height: "24px" }}>

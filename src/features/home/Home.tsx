@@ -1,4 +1,4 @@
-import { AppBar, Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
 import Player from "../../components/Player";
@@ -60,9 +60,7 @@ const Home = () => {
                     {renderedContent}
                 </Box>
             </Grid>
-            <AppBar position="fixed" style={{ top: "calc(100% - 90px)", height: "90px" }}>
-                <Player />
-            </AppBar>
+            <Player />
         </Grid>
     );
 }

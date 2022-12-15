@@ -1,4 +1,4 @@
-import { Grid, Box, AppBar, Stack, Typography, IconButton, TableContainer, Paper } from "@mui/material";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
 import Player from "../../components/Player";
@@ -6,6 +6,9 @@ import TopBar from "../../components/TopBar";
 import { playlists } from "../../constants/data";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import TableFooter from "@mui/material/TableFooter";
 
 const Playlist = () => {
     const { id } = useParams();
@@ -16,9 +19,29 @@ const Playlist = () => {
         )
     }
     const songs = playlist.songs;
-    const renderedSongs = songs?.map(song => {
+    console.log(songs.length);
+    const renderedSongs = songs.map(song => {
         const { id, name, album, artist, length } = song;
-        return (<h1>Hello World</h1>);
+        return (
+            <TableRow key={id}>
+                <TableCell sx={{paddingX: 0}}>
+                        <IconButton><PlayArrowIcon /></IconButton>
+                </TableCell>
+                <TableCell>
+                    <Typography fontSize="1rem" color="white">{name}</Typography>
+                    <Typography fontSize="0.875rem" color="#b3b3b3">{artist}</Typography>
+                </TableCell>
+                <TableCell>
+                    <Typography fontSize="0.875rem" color="#b3b3b3">{album}</Typography>
+                </TableCell>
+                <TableCell>
+                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                        <Typography><IconButton><FavoriteBorderIcon /></IconButton></Typography>
+                        <Typography>{length}</Typography>
+                    </Stack>
+                </TableCell>
+            </TableRow>
+        );
     })
     return (
         <Grid direction="row" container height="100%">
@@ -44,23 +67,41 @@ const Playlist = () => {
                     <Box>
                         <Box height="104px">
                             <Stack paddingX={4} paddingY={3} direction="row" justifyContent="flex-start" spacing={4}>
-                                <IconButton color="success" style={{height: "56px", width: "56px"}}>
-                                    <PlayCircleIcon style={{height: "56px", width: "56px"}} />
+                                <IconButton color="success" style={{ height: "56px", width: "56px" }}>
+                                    <PlayCircleIcon style={{ height: "56px", width: "56px" }} />
                                 </IconButton>
-                                <IconButton style={{height: "56px", width: "56px"}}>
-                                    <FavoriteBorderIcon style={{height: "56px", width: "56px"}} />
+                                <IconButton style={{ height: "56px", width: "56px" }}>
+                                    <FavoriteBorderIcon style={{ height: "56px", width: "56px" }} />
                                 </IconButton>
                             </Stack>
                         </Box>
-                        <TableContainer component={Paper}>
-                            
-                        </TableContainer>
+                        <Box>
+                            <Box paddingX={4}>
+                                <TableContainer>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell><Typography color="#b3b3b3">#</Typography></TableCell>
+                                                <TableCell><Typography color="#b3b3b3">TITLE</Typography></TableCell>
+                                                <TableCell><Typography color="#b3b3b3">ALBUM</Typography></TableCell>
+                                                <TableCell align="right"><Typography color="#b3b3b3"><AccessTimeIcon /></Typography></TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {renderedSongs}
+                                        </TableBody>
+                                        <TableFooter>
+                                            <Box height="90px" />
+                                        </TableFooter>
+                                    </Table>
+                                </TableContainer>
+                                <Box height="90px"/>
+                            </Box>
+                        </Box>
                     </Box>
                 </Box>
             </Grid>
-            <AppBar position="fixed" style={{ top: "calc(100% - 90px)", height: "90px" }}>
-                <Player />
-            </AppBar>
+            <Player />
         </Grid>
     );
 }

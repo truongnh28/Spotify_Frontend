@@ -1,4 +1,4 @@
-import { Box, IconButton, Paper, Slider, Stack, Typography } from "@mui/material";
+import { Box, IconButton, Link, Paper, Slider, Stack, Typography } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -15,8 +15,10 @@ const Player = () => {
                     <Stack direction="row" alignItems="center" justifyContent="flex-start" minWidth="180px" width="30%" height={{ height: "56px" }}>
                         <img src="https://i.scdn.co/image/ab67706f00000002ca5a7517156021292e5663a6" alt="" style={{ height: "100%" }} />
                         <Box marginX={2} lineHeight="1.6" maxHeight="100%">
-                            <Typography fontWeight="bold">Saying thing</Typography>
-                            <Typography fontSize="0.6875rem">Emanuel Fremont</Typography>
+                            <Stack direction="column">
+                                <Link href={"/album/1"} underline="hover" color="white" fontWeight="bold">Saying thing</Link>
+                                <Link href={"/artist/1"} underline="hover" color="white" fontSize="0.6875rem">Emanuel Fremont</Link>
+                            </Stack>
                         </Box>
                         <IconButton>
                             <FavoriteBorderIcon />

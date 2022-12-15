@@ -1,4 +1,4 @@
-import { Grid, AppBar } from "@mui/material";
+import { Grid } from "@mui/material";
 import Nav from "../../components/Nav";
 import Player from "../../components/Player";
 import TopBar from "../../components/TopBar";

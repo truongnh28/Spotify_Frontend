@@ -1,28 +1,21 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Link } from "@mui/material";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter, Link } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
 import Player from "../../components/Player";
 import TopBar from "../../components/TopBar";
-import { playlists } from "../../constants/data";
+import { album_1 } from "../../constants/data";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import TableFooter from "@mui/material/TableFooter";
-import Row from "./Row";
+import Row from "../playlist/Row";
 
-const Playlist = () => {
+const Album = () => {
     const { id } = useParams();
-    const playlist = playlists.find(playlist => playlist.id === Number(id as string));
-    if (!playlist) {
-        return (
-            <h1>Not found</h1>
-        )
-    }
-    const songs = playlist.songs;
-    const renderedSongs = songs.map((song, i) => {
+    console.log(id);
+    const renderedSongs = album_1.map((song, i) => {
         const { id, name, album, artist, length } = song;
-        return <Row id={id} name={name} album={album} artist={artist} length={length} order={i + 1} />
-    })
+        return <Row id={id} name={name} album={null} artist={artist} length={length} order={i + 1} />
+    });
     return (
         <Grid direction="row" container height="100%">
             <Grid position="fixed" width="203px" height="100%">
@@ -33,13 +26,8 @@ const Playlist = () => {
                 <Box>
                     <Stack paddingX={4} paddingBottom={3}>
                         <Stack direction="row">
-                            <Box marginRight={3} height={{ xs: "192px", sm: "192px", md: "192px", lg: "232px", xl: "232px" }} >
-                                <img src={playlist?.imgSrc} alt="" style={{ height: "100%", width: "auto" }} />
-                            </Box>
                             <Stack direction="column" justifyContent="flex-end" lineHeight="25.6px" spacing={1}>
-                                <Typography color="white" fontSize="12px" fontWeight="bold">PLAYLIST</Typography>
-                                <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "4.5rem", lg: "6rem", xl: "6rem" }} fontWeight="bold">{playlist.title}</Typography>
-                                <Typography color="#b3b3b3" fontSize="1rem">{playlist.description}</Typography>
+                                <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "4.5rem", lg: "6rem", xl: "6rem" }} fontWeight="bold">{"Staden"}</Typography>
                                 <Typography color="white" fontSize="0.875rem">
                                     <Link href="/" underline="hover" color="white" fontWeight="bold">Spotify</Link>
                                     &nbsp;
@@ -48,7 +36,7 @@ const Playlist = () => {
                                     &nbsp;
                                     &#x2022;
                                     &nbsp;
-                                    {songs.length} songs
+                                    {album_1.length} songs
                                 </Typography>
                             </Stack>
                         </Stack>
@@ -72,7 +60,6 @@ const Playlist = () => {
                                             <TableRow>
                                                 <TableCell align="left"><Typography color="#b3b3b3">#</Typography></TableCell>
                                                 <TableCell align="left"><Typography color="#b3b3b3">TITLE</Typography></TableCell>
-                                                <TableCell align="left"><Typography color="#b3b3b3">ALBUM</Typography></TableCell>
                                                 <TableCell align="right"><Typography color="#b3b3b3"><AccessTimeIcon /></Typography></TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -95,4 +82,4 @@ const Playlist = () => {
     );
 }
 
-export default Playlist;
+export default Album;

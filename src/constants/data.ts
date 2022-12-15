@@ -51,6 +51,54 @@ export const playlists = [
     }
 ];
 
+export const album_1 = [
+    {
+        id: 3,
+        name: "Kungsholmen",
+        album: "Staden",
+        artist: "Anders Linros",
+        length: 121,
+    },
+    {
+        id: 4,
+        name: "Östermalm",
+        album: "Staden",
+        artist: "Anders Linros",
+        length: 121,
+    },
+    {
+        id: 5,
+        name: "Södermalm",
+        album: "Staden",
+        artist: "Aders Linors",
+        length: 121,
+    }
+];
+
+export const artist_1 = [
+    {
+        id: 3,
+        name: "Kungsholmen",
+        album: "Staden",
+        artist: "Anders Linros",
+        length: 121,
+    },
+    {
+        id: 4,
+        name: "Östermalm",
+        album: "Staden",
+        artist: "Anders Linros",
+        length: 121,
+    },
+    {
+        id: 5,
+        name: "Södermalm",
+        album: "Staden",
+        artist: "Aders Linors",
+        length: 121,
+    }
+]
+
 export const USERNAME = "truongnh";
 export const PASSWORD = "123";
 export const CODE = "ea9cb82c-8e96-4061-9ce8-bbdf44b69e26";

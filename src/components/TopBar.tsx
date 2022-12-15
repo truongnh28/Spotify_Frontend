@@ -107,7 +107,6 @@ export default function TopBar({ currentPage } : { currentPage: string}) {
     if (isSearchPage) {
         justifyContent = "space-between";
     }
-
     return (
         <AppBar sx={styleAppBar}>
             <Stack direction="row" paddingX={4} paddingY={2} justifyContent={justifyContent} alignItems="center">

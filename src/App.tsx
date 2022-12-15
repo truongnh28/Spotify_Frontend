@@ -7,6 +7,7 @@ import Login from "./features/login/Login";
 import SignUp from "./pages/signup";
 import { useAppSelector } from "./app/hooks";
 import { selectUser } from "./features/auth/authSlice";
+import Playlist from "./features/playlist/Playlist";
 function App() {
     const user = useAppSelector(selectUser);
     const isLoggedIn = user.username.length > 0 && user.code.length > 0;
@@ -19,6 +20,7 @@ function App() {
                     <Route path="/search" element={<Search />} />
                     <Route path="/collection/playlist" element={<Home />} />
                     <Route path="/collection/tracks" element={<Home />}/>
+                    <Route path="/playlist/:id" element={<Playlist />} />
                     { !isLoggedIn && <Route path="/login" element={ <Login />}/>}
                     { !isLoggedIn && <Route path="/signup" element={ <SignUp /> }/>}
                 </Routes>

@@ -1,5 +1,7 @@
 import { AppBar, Box, Grid, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
+import Player from "../../components/Player";
 import TopBar from "../../components/TopBar";
 import { playlists } from "../../constants/data";
 import "./Home.css";
@@ -20,8 +22,12 @@ const styleCard = {
 }
 
 export const Card = ({ id, imgSrc, title, description }: { id: number, imgSrc: string, title: string, description: string }) => {
+    const navigate = useNavigate();
+    const handleClickCard = () => {
+        navigate(`/playlist/${id}`);
+    }
     return (
-        <Button sx={styleCard} variant="contained" fullWidth onClick={() => { alert("Hello") }}>
+        <Button sx={styleCard} variant="contained" fullWidth onClick={handleClickCard}>
             <div style={{ textAlign: "left" }}>
                 <div>
                     <img src={imgSrc} alt="" style={styleImgCard} />
@@ -54,8 +60,8 @@ const Home = () => {
                     {renderedContent}
                 </Box>
             </Grid>
-            <AppBar position="fixed" style={{ top: "calc(100% - 24px)", height: "24px" }}>
-                Hello World
+            <AppBar position="fixed" style={{ top: "calc(100% - 90px)", height: "90px" }}>
+                <Player />
             </AppBar>
         </Grid>
     );

@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../../app/store";
-import { COOKIE, LOGIN } from "../../constants/urls";
 import { userLogin } from "../../models/userLogin";
+import { LOGIN } from "../../api/auth";
 
 const initialState = {
     account: {

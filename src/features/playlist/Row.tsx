@@ -2,6 +2,7 @@ import { IconButton, Stack, TableCell, TableRow, Typography } from "@mui/materia
 import React from "react";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { convertToMinuteAndSecond } from "../../utils/convert";
 
 const styleRow = {
     "&:hover": {
@@ -12,13 +13,14 @@ const styleRow = {
 const Row = ({ id, name, album, artist, length, order }: {
     id: number;
     name: string;
-    album: string | null | undefined;
-    artist: string | null | undefined;
+    album: number | string | null | undefined;
+    artist: number | string | null | undefined;
     length: number;
     order: number;
 }) => {
     const [isHover, setIsHover] = React.useState(false);
     const index = <Typography fontSize="0.875rem" color="#b3b3b3">{order}</Typography>
+    const time = convertToMinuteAndSecond(length);
     return (
         <TableRow key={id} sx={styleRow} onMouseEnter={() => void setIsHover(true)} onMouseLeave={() => void setIsHover(false)}>
             <TableCell sx={isHover ? { paddingX: 0 } : undefined}>
@@ -38,7 +40,7 @@ const Row = ({ id, name, album, artist, length, order }: {
             <TableCell>
                 <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
                     <Typography><IconButton><FavoriteBorderIcon /></IconButton></Typography>
-                    <Typography>{length}</Typography>
+                    <Typography>{time}</Typography>
                 </Stack>
             </TableCell>
         </TableRow>

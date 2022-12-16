@@ -6,10 +6,10 @@ import Search from "./features/search/Search";
 import Login from "./features/login/Login";
 import { useAppSelector } from "./app/hooks";
 import { selectUser } from "./features/auth/authSlice";
-import Playlist from "./features/playlist/Playlist";
 import Album from "./features/album/Album";
 import Artist from "./features/artist/Artist";
 import SignUp from "./features/signup/SignUp";
+import Playlist from "./features/playlist/Playlist";
 function App() {
     const user = useAppSelector(selectUser);
     const isLoggedIn = user.username.length > 0 && user.code.length > 0;

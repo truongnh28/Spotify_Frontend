@@ -6,8 +6,10 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import { useState } from "react";
 
 const Player = () => {
+    const [currentSong, setCurrentSong] = useState();
     return (
         <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0, height: "90px" }}>
             <Box height="90px">

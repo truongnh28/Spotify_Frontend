@@ -52,12 +52,14 @@ export const getSongsInfoOfPlaylistV2 = async (playlistId: number) => {
     try {
         const response = await getSongsByPlaylist(playlistId);
         const songs = response.data.songs;
-        songs.forEach((song: SongResponse) => {
-            const responseAlbum = getSingleAlbum(song.album_id);
-            const responseArtist = getSingleArtist(song.artist_id);
-            console.log(responseAlbum);
-            console.log(responseArtist);
+        const result: SongExpandResponse[] = [];
+        songs.forEach(async (song: SongResponse) => {
+            const responses = await Promise.all([getSingleAlbum(song.album_id), getSingleArtist(song.artist_id)]);
+            const album = responses[0].data.albums;
+            const artist = responses[1].data.artists;
+            result.push({...song, album_name: album.name, artist_name: artist.name});
         })
+        return result;
     } catch(error) {
         return [];
     }

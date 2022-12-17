@@ -6,8 +6,11 @@ import { LOGIN } from "../../api/auth";
 
 const initialState = {
     account: {
-        username: "",
-        code: "",
+        user_id: 2,
+        username: "truong",
+        code: "9ea515ab-66cd-41bc-85a7-e42e2da1d09e",
+        role: "Admin",
+        status: "Active",
     },
     error: null,
 } as userLogin;
@@ -26,7 +29,7 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        login: (state, action: PayloadAction<{username: string; code: string}>) => {
+        login: (state, action: PayloadAction<{user_id: number; username: string; code: string; role: string; status: string}>) => {
             state.account = action.payload;
         },
         logout: (state) => {

@@ -28,7 +28,7 @@ const Album = () => {
     }, [id]);
     const renderedSongs = songs.map((song, i) => {
         const { song_id, name, artist_id, artist_name, length } = song;
-        return <Row key={song_id} id={song_id} name={name} album={null} album_id={null} artist_id={artist_id} artist={artist_name} length={length} order={i + 1} />
+        return <Row play_list={songs} key={song_id} id={song_id} name={name} album={null} album_id={null} artist_id={artist_id} artist={artist_name} length={length} order={i + 1} />
     });
     let renderedAlbum = null;
     if (album) {

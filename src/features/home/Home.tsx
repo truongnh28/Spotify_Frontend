@@ -7,13 +7,11 @@ import { PlaylistResponse } from "../../models/PlaylistResponse";
 import defaultImage from "../../assets/default-image.png";
 import "./Home.css";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { GET_ALL_PLAYLISTS } from "../../api/playlists";
 import { getAllPlaylist } from "../../services/playlists";
 
 const styleImgCard = {
     width: "100%",
-    height: "auto",
+    aspectRatio: "1 / 1",
 }
 
 const styleCard = {

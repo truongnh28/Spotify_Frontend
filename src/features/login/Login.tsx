@@ -46,9 +46,7 @@ const Login = () => {
     }
     
     const handleLogin = () => {
-        if (username === USERNAME && password === PASSWORD) {
-            dispatch(login({username: username, code: CODE}));
-            
+        if (username === USERNAME && password === PASSWORD) {            
             navigate("/");
         } else {
             setOpen(true);

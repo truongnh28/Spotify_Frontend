@@ -1,4 +1,4 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, TableFooter, Button } from "@mui/material";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, TableFooter, Button, Paper } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
 import Player from "../../components/Player";
@@ -12,13 +12,23 @@ import { ArtistResponse } from "../../models/ArtistResponse";
 import { getSingleArtist } from "../../services/artists";
 import Avatar from "@mui/material/Avatar";
 
+const About = ({ artist }: { artist: ArtistResponse }) => {
+    return (
+        <Paper elevation={1}>
+            <Stack direction="row" padding={5} alignItems="center" spacing={4}>
+                <Avatar src={artist.coverImg} alt="" sx={{ height: "100%", width: "204px" }} />
+                <Typography color="#b3b3b3" fontSize="1rem">{artist.description}</Typography>
+            </Stack>
+        </Paper>
+    );
+}
+
 const Artist = () => {
     const { id } = useParams();
     const [artist, setArtist] = useState(null);
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
     useEffect(() => {
         getSingleArtist(Number(id)).then((res) => {
-            console.log(res.data);
             setArtist(res.data.artists[0]);
         })
         getSongsByArtist(Number(id)).then((res) => {
@@ -27,7 +37,7 @@ const Artist = () => {
     }, [id]);
     const renderedSongs = songs.map((song: SongExpandResponse, i) => {
         const { name, length } = song;
-        return <Row key={song.song_id} order={i + 1} id={song.song_id} album_id={null} album={null} artist={null} artist_id={null} length={length} name={name} />
+        return <Row key={song.song_id} order={i + 1} play_list={songs} id={song.song_id} album_id={null} album={null} artist={null} artist_id={null} length={length} name={name} />
     });
     let renderedArtist = null;
     if (artist) {
@@ -44,7 +54,6 @@ const Artist = () => {
                         </Box>
                         <Stack direction="column" justifyContent="flex-end" lineHeight="25.6px" spacing={1}>
                             <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "4.5rem", lg: "6rem", xl: "6rem" }} fontWeight="bold">{renderedArtist.name}</Typography>
-                            <Typography color="#b3b3b3" fontSize="1rem">{renderedArtist.description}</Typography>
                         </Stack>
                     </Stack>
                 </Stack>
@@ -71,7 +80,9 @@ const Artist = () => {
                                     </TableFooter>
                                 </Table>
                             </TableContainer>
-                            <Box height="90px" />
+                            <Typography fontSize="1.5rem">About</Typography>
+                            <About artist={renderedArtist} />
+                            <Box height="180px" />
                         </Box>
                     </Box>
                 </Box>

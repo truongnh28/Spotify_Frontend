@@ -11,7 +11,7 @@ import Row from "./Row";
 import { useEffect, useState } from "react";
 import { PlaylistResponse } from "../../models/PlaylistResponse";
 import { SongExpandResponse } from "../../models/SongResponse";
-import { getSongsInfoOfPlaylist } from "../../services/songs";
+import { getSongsInfoOfPlaylist, getSongsInfoOfPlaylistV2 } from "../../services/songs";
 import { getSinglePlaylist } from "../../services/playlists";
 
 const Playlist = () => {
@@ -24,17 +24,20 @@ const Playlist = () => {
         })
         getSongsInfoOfPlaylist(Number(id)).then((resSongs) => {
             setSongs(resSongs);
+        });
+        getSongsInfoOfPlaylistV2(Number(id)).then((resSongs) => {
+            console.log(resSongs);
         })
     }, [id]);
     const renderedSongs = songs.map((song: SongExpandResponse, i) => {
         const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
-        return <Row key={song_id} id={song_id} name={name} album_id={album_id} artist_id={artist_id} album={album_name} artist={artist_name} length={length} order={i + 1} />
+        return <Row key={song_id} id={song_id} name={name} album_id={album_id} artist_id={artist_id} play_list={songs} album={album_name} artist={artist_name} length={length} order={i + 1} />
     })
     let renderedPlaylist = null;
     if (playlist) {
         renderedPlaylist = playlist as PlaylistResponse;
     }
-    let contentRendered = <Typography>Not Found Specific Playlist</Typography>;
+    let contentRendered = <Typography fontSize="1.5rem">Not Found Specific Playlist</Typography>;
     if (playlist && renderedPlaylist) {
         contentRendered = (
             <>
@@ -48,13 +51,6 @@ const Playlist = () => {
                             <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "4.5rem", lg: "6rem", xl: "6rem" }} fontWeight="bold">{renderedPlaylist.name}</Typography>
                             {/* <Typography color="#b3b3b3" fontSize="1rem">{renderedPlaylist.name}</Typography> */}
                             <Typography color="white" fontSize="0.875rem">
-                                <Link href="/" underline="hover" color="white" fontWeight="bold">Spotify</Link>
-                                &nbsp;
-                                &#x2022;
-                                6,768,242 likes
-                                &nbsp;
-                                &#x2022;
-                                &nbsp;
                                 {songs.length} songs
                             </Typography>
                         </Stack>

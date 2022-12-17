@@ -27,8 +27,8 @@ const Playlist = () => {
         })
     }, [id]);
     const renderedSongs = songs.map((song: SongExpandResponse, i) => {
-        const { song_id, name, length, album_name, artist_name } = song;
-        return <Row key={song_id} id={song_id} name={name} album={album_name} artist={artist_name} length={length} order={i + 1} />
+        const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
+        return <Row key={song_id} id={song_id} name={name} album_id={album_id} artist_id={artist_id} album={album_name} artist={artist_name} length={length} order={i + 1} />
     })
     let renderedPlaylist = null;
     if (playlist) {

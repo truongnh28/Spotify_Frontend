@@ -1,7 +1,7 @@
 import axios from "axios"
 import { GET_SONGS_BY_ALBUM, GET_SONGS_BY_ARTIST, GET_SONGS_BY_NAME, GET_SONGS_BY_PLAYLIST, GET_SONGS_LIKED_BY_USER } from "../api/songs"
-import { getAllAlbum } from "./albums";
-import { getAllArtist } from "./artists";
+import { getAllAlbum, getSingleAlbum } from "./albums";
+import { getAllArtist, getSingleArtist } from "./artists";
 import { SongExpandResponse, SongResponse } from "../models/SongResponse";
 import { AlbumResponse } from "../models/AlbumResponse";
 import { ArtistResponse } from "../models/ArtistResponse";
@@ -42,8 +42,22 @@ export const getSongsInfoOfPlaylist = async (playlistId: number) => {
                 artist_name: artist?.name,
             })
         });
-        
         return result;
+    } catch(error) {
+        return [];
+    }
+}
+
+export const getSongsInfoOfPlaylistV2 = async (playlistId: number) => {
+    try {
+        const response = await getSongsByPlaylist(playlistId);
+        const songs = response.data.songs;
+        songs.forEach((song: SongResponse) => {
+            const responseAlbum = getSingleAlbum(song.album_id);
+            const responseArtist = getSingleArtist(song.artist_id);
+            console.log(responseAlbum);
+            console.log(responseArtist);
+        })
     } catch(error) {
         return [];
     }

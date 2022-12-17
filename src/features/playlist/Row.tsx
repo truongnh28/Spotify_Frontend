@@ -1,4 +1,4 @@
-import { IconButton, Stack, TableCell, TableRow, Typography } from "@mui/material";
+import { IconButton, Link, Stack, TableCell, TableRow, Typography } from "@mui/material";
 import React from "react";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -10,9 +10,11 @@ const styleRow = {
     }
 }
 
-const Row = ({ id, name, album, artist, length, order }: {
+const Row = ({ id, name, album_id, artist_id, album, artist, length, order }: {
     id: number;
     name: string;
+    album_id: number | null | undefined;
+    artist_id: number | null | undefined;
     album: number | string | null | undefined;
     artist: number | string | null | undefined;
     length: number;
@@ -28,12 +30,12 @@ const Row = ({ id, name, album, artist, length, order }: {
             </TableCell>
             <TableCell>
                 <Typography fontSize="1rem" color="white">{name}</Typography>
-                { artist && <Typography fontSize="0.875rem" color="#b3b3b3">{artist}</Typography> }
+                { artist && <Link href={`/artist/${artist_id}`} underline="hover" fontSize="0.875rem" color="#b3b3b3">{artist}</Link> }
             </TableCell>
             {album &&
                 (
                     <TableCell>
-                        <Typography fontSize="0.875rem" color="#b3b3b3">{album}</Typography>
+                        <Link href={`/album/${album_id}`} fontSize="0.875rem" color="#b3b3b3">{album}</Link>
                     </TableCell>
                 )
             }

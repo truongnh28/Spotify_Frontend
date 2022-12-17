@@ -9,6 +9,7 @@ import "./Home.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { GET_ALL_PLAYLISTS } from "../../api/playlists";
+import { getAllPlaylist } from "../../services/playlists";
 
 const styleImgCard = {
     width: "100%",
@@ -46,15 +47,10 @@ export const Card = ({ id, imgSrc, title, description }: { id: number, imgSrc: s
 const Home = () => {
     const [playlists, setPlaylists] = useState([]);
     useEffect(() => {
-        getAllPlaylist();
+        getAllPlaylist().then((res) => {
+            setPlaylists(res.data.play_lists);
+        });
     }, []);
-    const getAllPlaylist = () => {
-        axios
-            .get(`${GET_ALL_PLAYLISTS}`)
-            .then((res) => {
-                setPlaylists(res.data.play_lists);
-            });
-    } 
     const renderedContent = (
         <Grid container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
             {playlists.map((playlist: PlaylistResponse) => (

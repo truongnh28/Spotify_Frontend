@@ -11,8 +11,8 @@ import Row from "../playlist/Row";
 import { useEffect, useState } from "react";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { getSongsByAlbum } from "../../services/songs";
-import { getAlbumInfo, getSingleAlbum } from "../../services/albums";
-import { AlbumExpandResponse, AlbumResponse } from "../../models/AlbumResponse";
+import { getAlbumInfo } from "../../services/albums";
+import { AlbumExpandResponse } from "../../models/AlbumResponse";
 
 const Album = () => {
     const { id } = useParams();

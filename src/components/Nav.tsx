@@ -18,15 +18,15 @@ interface LinkItemProps {
     to: string;
     name: string;
     icon: any;
-    isCurrent: boolean
+    current: boolean;
 }
 
 const LinkItem = forwardRef<any, LinkItemProps>((props: LinkItemProps, ref) => {
-    const { to, name, icon, isCurrent } = props;
+    const { to, name, icon, current } = props;
     return (
         <div {...props} ref={ref}>
             <Link to={to} style={{ textDecoration: "none" }}>
-                <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={isCurrent ? { ...style, color: "white" } : style}>
+                <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={current ? { ...style, color: "white" } : style}>
                     {icon}
                     <Typography><b>{name}</b></Typography>
                 </Stack>
@@ -49,7 +49,7 @@ const Nav = ({ currentPage }: { currentPage: string}) => {
         return (
             <li key={navItem.name}>
                 <Tooltip title={changePathAndBlockEvent ? "You must log in first" : null} arrow placement="right-start">
-                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={icon} />
+                    <LinkItem to={to} name={navItem.name} current={isCurrent} icon={icon} />
                 </Tooltip>
             </li>
         )
@@ -63,7 +63,7 @@ const Nav = ({ currentPage }: { currentPage: string}) => {
         return (
             <li key={navItem.name}>
                 <Tooltip title={!isLoggedIn ? "You must log in first" : null} arrow placement="right-start">
-                    <LinkItem to={to} name={navItem.name} isCurrent={isCurrent} icon={navItem.icon} />
+                    <LinkItem to={to} name={navItem.name} current={isCurrent} icon={navItem.icon} />
                 </Tooltip>
             </li>
         );

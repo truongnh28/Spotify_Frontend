@@ -1,10 +1,9 @@
 import { Stack, Typography, TextField, Button, Modal, Box } from "@mui/material";
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import logo from "../../assets/spotify-logo.png";
-import { CODE, PASSWORD, USERNAME } from "../../constants/data";
-import { login } from "../auth/authSlice";
+import { loginSpotify } from "../auth/authSlice";
 
 const styleModal = {
     position: 'absolute' as 'absolute',
@@ -46,11 +45,8 @@ const Login = () => {
     }
     
     const handleLogin = () => {
-        if (username === USERNAME && password === PASSWORD) {            
-            navigate("/");
-        } else {
-            setOpen(true);
-        }
+        dispatch(loginSpotify({username, password}));
+        navigate(`/`);
     }
     const handleClose = () => setOpen(false);
     const canPressed = (username !== null && username.length > 0) && (password !== null && password.length > 0);

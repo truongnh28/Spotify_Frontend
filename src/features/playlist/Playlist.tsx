@@ -11,7 +11,7 @@ import Row from "./Row";
 import { useEffect, useState } from "react";
 import { PlaylistResponse } from "../../models/PlaylistResponse";
 import { SongExpandResponse } from "../../models/SongResponse";
-import { getSongsInfoOfPlaylist, getSongsInfoOfPlaylistV2 } from "../../services/songs";
+import { getSongsInfoOfPlaylist } from "../../services/songs";
 import { getSinglePlaylist } from "../../services/playlists";
 
 const Playlist = () => {
@@ -25,9 +25,6 @@ const Playlist = () => {
         getSongsInfoOfPlaylist(Number(id)).then((resSongs) => {
             setSongs(resSongs);
         });
-        getSongsInfoOfPlaylistV2(Number(id)).then((resSongs) => {
-            console.log(resSongs);
-        })
     }, [id]);
     const renderedSongs = songs.map((song: SongExpandResponse, i) => {
         const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;

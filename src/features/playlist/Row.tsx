@@ -46,13 +46,23 @@ const Row = ({ id, name, album_id, play_list, artist_id, album, artist, length, 
     const time = convertToMinuteAndSecond(length);
     const hanldePlayButton = (prevState: boolean) => {
         setPlaying(!prevState);
-        const curr = {...currentState,
+        const newState = {
+            ...currentState,
+            playing: !prevState,
             currentId: id,
-            play_list: play_list,
-            playing: !prevState
-        };
-        dispatch(update(curr));
+            playlist: play_list, 
+        }
+        console.log(newState);
     }
+    // const hanldePlayButton = (prevState: boolean) => {
+    //     setPlaying(!prevState);
+    //     const curr = {...currentState,
+    //         currentId: id,
+    //         play_list: play_list,
+    //         playing: !prevState
+    //     };
+    //     dispatch(update(curr));
+    // }
     const handleLikedButton = async (prevState: boolean) => {
         if (!prevState) {
             likedSong(currentUser.user_id, id).then((res) => {

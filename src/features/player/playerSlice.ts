@@ -1,78 +1,43 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { PlayerState } from "../../models/Player";
+import { createSlice } from "@reduxjs/toolkit";
+import { MusicPlayerState } from "../../models/MusicPlayerState";
 import { RootState } from "../../app/store";
 
-export interface UpdatePayload {
-    [key: string]: any;
-}
-
 const initialState = {
-    currentId: -1,
-    currentSong: null,
-    playlist: [],
+    currentSong: -1,
+    songList: [],
     playing: false,
     repeat: 0,
-    shuffle: false,
-    currentTime: 0,
-    currentVolume: 100,
-} as PlayerState;
+    random: false,
+} as MusicPlayerState;
 
 export const playerSlice = createSlice({
-    name: "player",
+    name: "musicPlayer",
     initialState,
     reducers: {
-        play: (state, action) => {
-            state.currentId = action.payload.id;
-            state.currentSong = action.payload.song;
-            state.playlist = action.payload.playlists;
-            state.playing = true;
+        setSongList: (state, action) => {
+            state.songList = action.payload;
         },
-        pause: (state) => {
-            state.playing = false;
+        setCurrentSong: (state, action) => {
+            state.currentSong = action.payload;
         },
-        update: (state, action: PayloadAction<PlayerState>) => {
-            state.currentId = action.payload.currentId;
-            state.currentSong = action.payload.currentSong;
-            state.currentTime = action.payload.currentTime;
-            state.currentVolume = action.payload.currentVolume;
-            state.playing = action.payload.playing;
-            state.playlist = action.payload.playlist;
-            state.repeat = action.payload.repeat;
-            state.shuffle = action.payload.shuffle;
+        toggleRandom: (state, action) => {
+            state.random = action.payload ? false : true;
         },
-        nextSong: (state) => {
-            const shuffle = state.shuffle;
-            const repeat = state.repeat;
-            const length = state.playlist.length;
-            if (shuffle) {
-                const randomSong = state.playlist[Math.floor(Math.random() * length)];
-                state.currentSong = randomSong;
-                return;
-            }
-            if (repeat) {
-                if (state.currentId === length - 1) {
-                    state.currentId = 0;
-                    state.currentSong = state.playlist[0];
-                    return;
-                }
-                state.currentId += 1;
-                state.currentSong = state.playlist[state.currentId];
-                return;
-            }
-            if (state.currentId === length - 1) {
-                state.currentId = -1;
-                state.currentSong = null;
-                state.playing = false;
-                state.repeat = 0;
-                state.shuffle = false;
-                state.currentTime = 0;
-            }
-        }
+        togglePlaying: (state, action) => {
+            state.playing = action.payload ? false : true;
+        },
+        setRepeat: (state, action) => {
+            state.repeat = (action.payload === 0) ? 1: (action.payload === 1 ? 2 : 0);
+        },
     }
 });
 
 export default playerSlice.reducer;
 
-export const { play, pause, nextSong, update } = playerSlice.actions;
+export const { setSongList, setCurrentSong, toggleRandom, togglePlaying, setRepeat } = playerSlice.actions;
 
-export const selectPlayerState = (state: RootState) => state.player;
+export const selectCurrentSong = (state: RootState) => state.player.currentSong;
+export const selectPlaying = (state: RootState) => state.player.playing;
+export const selectSongList = (state: RootState) => state.player.songList;
+export const selectRandom = (state: RootState) => state.player.random;
+export const selectRepeat = (state: RootState) => state.player.repeat;

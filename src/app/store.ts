@@ -5,7 +5,7 @@ import playerReducer from "../features/player/playerSlice";
 export const store = configureStore({
     reducer: {
         user: userReducer,
-        player: playerReducer
+        player: playerReducer,
     }
 })
 

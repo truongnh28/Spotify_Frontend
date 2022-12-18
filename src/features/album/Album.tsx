@@ -1,34 +1,110 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter, Link } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter } from "@mui/material";
+import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import Player from "../../components/Player";
+import MusicPlayer from "../../components/MusicPlayer";
 import TopBar from "../../components/TopBar";
 import { album_1 } from "../../constants/data";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import Row from "../playlist/Row";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import PauseIcon from '@mui/icons-material/Pause';
 import { useEffect, useState } from "react";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { getSongsByAlbum } from "../../services/songs";
 import { getAlbumInfo } from "../../services/albums";
 import { AlbumExpandResponse } from "../../models/AlbumResponse";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { checkLikedSong, unlikeSong, likedSong } from "../../services/interactions";
+import { selectUser } from "../auth/authSlice";
+import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
+import { convertToMinuteAndSecond } from "../../utils/convert";
+
+const styleRow = {
+    "&:hover": {
+        bgcolor: "hsla(0,0%,100%,.1)",
+    }
+}
+
+const LikeButton = ({ song_id }: { song_id: number }) => {
+    const user = useAppSelector(selectUser);
+    const [liked, setLiked] = useState(false);
+    useEffect(() => {
+        checkLikedSong(user.user_id, song_id).then((res) => {
+            setLiked(res);
+        })
+    }, [song_id, user.user_id]);
+    const handleLikedButton = (prev: boolean, song_id: number) => {
+        if (prev) {
+            unlikeSong(user.user_id, song_id).then((res) => {
+                setLiked(false);
+            });
+        } else {
+            likedSong(user.user_id, song_id).then((res) => {
+                setLiked(true);
+            })
+        }
+    }
+    return (
+        <Typography>
+            <IconButton onClick={() => handleLikedButton(liked, song_id)}>
+                {liked ? <FavoriteIcon color="success" /> : <FavoriteBorderIcon />}
+            </IconButton>
+        </Typography>
+    )
+}
 
 const Album = () => {
-    const { id } = useParams();
+    const { albumId } = useParams();
+    const dispatch = useAppDispatch();
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
     const [album, setAlbum] = useState<AlbumExpandResponse | undefined>();
+    const playing = useAppSelector(selectPlaying);
+    const currentSong = useAppSelector(selectCurrentSong);
     useEffect(() => {
-        getAlbumInfo(Number(id)).then((res) => {
+        getAlbumInfo(Number(albumId)).then((res) => {
             setAlbum(res)
         })
-        getSongsByAlbum(Number(id)).then((res) => {
+        getSongsByAlbum(Number(albumId)).then((res) => {
             setSongs(res.data.songs);
+            dispatch(setSongList(res.data.songs));
         })
-    }, [id]);
-    const renderedSongs = songs.map((song, i) => {
+    }, [albumId, dispatch]);
+    const handlePlayButton = (index: number) => {
+        if (currentSong === index) {
+            dispatch(togglePlaying(playing));
+        } else {
+            if (playing === true) {
+                dispatch(setCurrentSong(index));
+            } else {
+                dispatch(togglePlaying(playing));
+                dispatch(setCurrentSong(index));
+            }
+        }
+    }
+    const renderedSongs = songs.map((song, index) => {
         const { song_id, name, artist_id, artist_name, length } = song;
-        return <Row play_list={songs} key={song_id} id={song_id} name={name} album={null} album_id={null} artist_id={artist_id} artist={artist_name} length={length} order={i + 1} />
+        const time = convertToMinuteAndSecond(length);
+        return (
+            <TableRow key={song_id} sx={styleRow}>
+                <TableCell sx={{paddingX: 0}}>
+                    <IconButton onClick={() => handlePlayButton(index)}>
+                        {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                </TableCell>
+                <TableCell>
+                    <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                    <Link to={`/artist/${artist_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none"}}>{artist_name}</Link>
+                </TableCell>
+                <TableCell>
+                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                        <LikeButton song_id={song_id} />
+                        <Typography>{time}</Typography>
+                    </Stack>
+                </TableCell>
+            </TableRow>
+        );
     });
     let renderedAlbum = null;
     if (album) {
@@ -46,10 +122,7 @@ const Album = () => {
                         <Stack direction="column" justifyContent="flex-end" lineHeight="25.6px" spacing={1}>
                             <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "4.5rem", lg: "6rem", xl: "6rem" }} fontWeight="bold">{renderedAlbum.name}</Typography>
                             <Typography color="white" fontSize="0.875rem">
-                                <Link href={`/artist/${renderedAlbum.artist_id}`} underline="hover" color="white" fontWeight="bold">{renderedAlbum.artist_name}</Link>
-                                &nbsp;
-                                &#x2022;
-                                6,768,242 likes
+                                <Link to={`/artist/${renderedAlbum.artist_id}`} style={{textDecoration: "none", color: "white", fontWeight:"bold"}} >{renderedAlbum.artist_name}</Link>
                                 &nbsp;
                                 &#x2022;
                                 &nbsp;
@@ -106,7 +179,6 @@ const Album = () => {
                     {contentRendered}
                 </Box>
             </Grid>
-            <Player />
         </Grid>
     );
 }

@@ -1,40 +1,126 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Link } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import Player from "../../components/Player";
+import MusicPlayer from "../../components/MusicPlayer";
 import TopBar from "../../components/TopBar";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TableFooter from "@mui/material/TableFooter";
-import Row from "./Row";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import PauseIcon from '@mui/icons-material/Pause';
 import { useEffect, useState } from "react";
 import { PlaylistResponse } from "../../models/PlaylistResponse";
-import { SongExpandResponse } from "../../models/SongResponse";
-import { getSongsInfoOfPlaylist } from "../../services/songs";
+import { SongExpandResponse, SongResponse } from "../../models/SongResponse";
+import { getAllSongs, getSongs, getSongsInfoOfPlaylist } from "../../services/songs";
 import { getSinglePlaylist } from "../../services/playlists";
+import { convertToMinuteAndSecond } from "../../utils/convert";
+import { checkLikedSong, likedSong, unlikeSong } from "../../services/interactions";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectUser } from "../auth/authSlice";
+import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
+import { getSingleAlbum } from "../../services/albums";
+import { getSingleArtist } from "../../services/artists";
+
+const styleRow = {
+    "&:hover": {
+        bgcolor: "hsla(0,0%,100%,.1)",
+    }
+}
+
+const LikeButton = ({ song_id }: { song_id: number }) => {
+    const user = useAppSelector(selectUser);
+    const [liked, setLiked] = useState(false);
+    useEffect(() => {
+        checkLikedSong(user.user_id, song_id).then((res) => {
+            setLiked(res);
+        })
+    }, [song_id, user.user_id]);
+    const handleLikedButton = (prev: boolean, song_id: number) => {
+        if (prev) {
+            unlikeSong(user.user_id, song_id).then((res) => {
+                setLiked(false);
+            });
+        } else {
+            likedSong(user.user_id, song_id).then((res) => {
+                setLiked(true);
+            })
+        }
+    }
+    return (
+        <Typography>
+            <IconButton onClick={() => handleLikedButton(liked, song_id)}>
+                {liked ? <FavoriteIcon color="success" /> : <FavoriteBorderIcon />}
+            </IconButton>
+        </Typography>
+    )
+}
 
 const Playlist = () => {
-    const { id } = useParams();
+    const { playlistId } = useParams();
+    const dispatch = useAppDispatch();
     const [playlist, setPlaylist] = useState(null);
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
+    const playing = useAppSelector(selectPlaying);
+    const currentSong = useAppSelector(selectCurrentSong);
     useEffect(() => {
-        getSinglePlaylist(Number(id)).then((res) => {
+        getSinglePlaylist(Number(playlistId)).then((res) => {
             setPlaylist(res.data.play_lists[0]);
         })
-        getSongsInfoOfPlaylist(Number(id)).then((resSongs) => {
-            setSongs(resSongs);
-        });
-    }, [id]);
-    const renderedSongs = songs.map((song: SongExpandResponse, i) => {
+        // getSongsInfoOfPlaylist(Number(playlistId)).then((resSongs) => {
+        //     setSongs(resSongs);
+        //     dispatch(setSongList(resSongs));
+        // });
+        getSongs().then((res) => {
+            setSongs(res);
+            dispatch(setSongList(res));
+        })
+    }, [dispatch, playlistId]);
+    const handlePlayButton = (index: number) => {
+        if (currentSong === index) {
+            dispatch(togglePlaying(playing));
+        } else {
+            if (playing === true) {
+                dispatch(setCurrentSong(index));
+            } else {
+                dispatch(togglePlaying(playing));
+                dispatch(setCurrentSong(index));
+            }
+        }
+    }
+
+    const renderedSongs = songs.map((song: SongExpandResponse, index) => {
         const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
-        return <Row key={song_id} id={song_id} name={name} album_id={album_id} artist_id={artist_id} play_list={songs} album={album_name} artist={artist_name} length={length} order={i + 1} />
+        const time = convertToMinuteAndSecond(length);
+        return (
+            <TableRow key={song_id} sx={styleRow}>
+                <TableCell sx={{paddingX: 0}}>
+                    <IconButton onClick={() => handlePlayButton(index)}>
+                        {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                </TableCell>
+                <TableCell>
+                    <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                    <Link to={`/artist/${artist_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none"}}>{artist_name}</Link>
+                </TableCell>
+                <TableCell>
+                    <Link to={`/album/${album_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none"}}>{album_name}</Link>
+                </TableCell>
+                <TableCell>
+                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                        <LikeButton song_id={song_id} />
+                        <Typography>{time}</Typography>
+                    </Stack>
+                </TableCell>
+            </TableRow>
+        );
     })
     let renderedPlaylist = null;
     if (playlist) {
         renderedPlaylist = playlist as PlaylistResponse;
     }
-    let contentRendered = <Typography fontSize="1.5rem">Not Found Specific Playlist</Typography>;
+    let contentRendered = <Typography fontWeight="bold" fontSize="1.5rem">Not Found Specific Playlist</Typography>;
     if (playlist && renderedPlaylist) {
         contentRendered = (
             <>
@@ -46,7 +132,6 @@ const Playlist = () => {
                         <Stack direction="column" justifyContent="flex-end" lineHeight="25.6px" spacing={1}>
                             <Typography color="white" fontSize="12px" fontWeight="bold">PLAYLIST</Typography>
                             <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "4.5rem", lg: "6rem", xl: "6rem" }} fontWeight="bold">{renderedPlaylist.name}</Typography>
-                            {/* <Typography color="#b3b3b3" fontSize="1rem">{renderedPlaylist.name}</Typography> */}
                             <Typography color="white" fontSize="0.875rem">
                                 {songs.length} songs
                             </Typography>
@@ -79,9 +164,6 @@ const Playlist = () => {
                                     <TableBody>
                                         {renderedSongs}
                                     </TableBody>
-                                    <TableFooter>
-                                        <Box height="90px" />
-                                    </TableFooter>
                                 </Table>
                             </TableContainer>
                             <Box height="90px" />
@@ -102,7 +184,6 @@ const Playlist = () => {
                     {contentRendered}
                 </Box>
             </Grid>
-            <Player />
         </Grid>
     );
 }

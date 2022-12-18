@@ -1,16 +1,52 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, TableFooter, Button, Paper } from "@mui/material";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, TableFooter, Button, Paper, TableCell, TableRow } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import Player from "../../components/Player";
+import MusicPlayer from "../../components/MusicPlayer";
 import TopBar from "../../components/TopBar";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import Row from "../playlist/Row";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import PauseIcon from '@mui/icons-material/Pause';
 import { useEffect, useState } from "react";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { getSongsByArtist } from "../../services/songs";
 import { ArtistResponse } from "../../models/ArtistResponse";
 import { getSingleArtist } from "../../services/artists";
 import Avatar from "@mui/material/Avatar";
+import { convertToMinuteAndSecond } from "../../utils/convert";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { checkLikedSong, unlikeSong, likedSong } from "../../services/interactions";
+import { selectUser } from "../auth/authSlice";
+import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
+
+const LikeButton = ({ song_id }: { song_id: number }) => {
+    const user = useAppSelector(selectUser);
+    const [liked, setLiked] = useState(false);
+    useEffect(() => {
+        checkLikedSong(user.user_id, song_id).then((res) => {
+            setLiked(res);
+        })
+    }, [song_id, user.user_id]);
+    const handleLikedButton = (prev: boolean, song_id: number) => {
+        if (prev) {
+            unlikeSong(user.user_id, song_id).then((res) => {
+                setLiked(false);
+            });
+        } else {
+            likedSong(user.user_id, song_id).then((res) => {
+                setLiked(true);
+            })
+        }
+    }
+    return (
+        <Typography>
+            <IconButton onClick={() => handleLikedButton(liked, song_id)}>
+                {liked ? <FavoriteIcon color="success" /> : <FavoriteBorderIcon />}
+            </IconButton>
+        </Typography>
+    )
+}
 
 const About = ({ artist }: { artist: ArtistResponse }) => {
     return (
@@ -23,21 +59,61 @@ const About = ({ artist }: { artist: ArtistResponse }) => {
     );
 }
 
+const styleRow = {
+    "&:hover": {
+        bgcolor: "hsla(0,0%,100%,.1)",
+    }
+}
+
 const Artist = () => {
     const { id } = useParams();
+    const dispatch = useAppDispatch();
     const [artist, setArtist] = useState(null);
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
+    const playing = useAppSelector(selectPlaying);
+    const currentSong = useAppSelector(selectCurrentSong);
     useEffect(() => {
         getSingleArtist(Number(id)).then((res) => {
             setArtist(res.data.artists[0]);
         })
         getSongsByArtist(Number(id)).then((res) => {
             setSongs(res.data.songs);
+            dispatch(setSongList(res.data.songs));
         })
-    }, [id]);
-    const renderedSongs = songs.map((song: SongExpandResponse, i) => {
-        const { name, length } = song;
-        return <Row key={song.song_id} order={i + 1} play_list={songs} id={song.song_id} album_id={null} album={null} artist={null} artist_id={null} length={length} name={name} />
+    }, [id, dispatch]);
+    const handlePlayButton = (index: number) => {
+        if (currentSong === index) {
+            dispatch(togglePlaying(playing));
+        } else {
+            if (playing === true) {
+                dispatch(setCurrentSong(index));
+            } else {
+                dispatch(togglePlaying(playing));
+                dispatch(setCurrentSong(index));
+            }
+        }
+    }
+    const renderedSongs = songs.map((song: SongExpandResponse, index) => {
+        const { song_id, name, length } = song;        
+        const time = convertToMinuteAndSecond(length);
+        return (
+            <TableRow key={song_id} sx={styleRow}>
+                <TableCell sx={{paddingX: 0}}>
+                    <IconButton onClick={() => handlePlayButton(index)}>
+                        {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                </TableCell>
+                <TableCell>
+                    <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                </TableCell>
+                <TableCell>
+                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                        <LikeButton song_id={song_id} />
+                        <Typography>{time}</Typography>
+                    </Stack>
+                </TableCell>
+            </TableRow>
+        );
     });
     let renderedArtist = null;
     if (artist) {
@@ -100,7 +176,6 @@ const Artist = () => {
                     {contentRendered}
                 </Box>
             </Grid>
-            <Player />
         </Grid>
     );
 }

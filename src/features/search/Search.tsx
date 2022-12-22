@@ -1,6 +1,5 @@
 import { Grid } from "@mui/material";
 import Nav from "../../components/Nav";
-import MusicPlayer from "../../components/MusicPlayer";
 import TopBar from "../../components/TopBar";
 
 const Search = () => {
@@ -12,7 +11,6 @@ const Search = () => {
             <Grid item marginLeft="203px" height="100%" width="100%">
                 <TopBar currentPage="Search" />
             </Grid>
-            <MusicPlayer />
         </Grid>
     );
 }

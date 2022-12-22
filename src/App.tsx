@@ -26,15 +26,37 @@ function App() {
                 <CssBaseline />
                 <React.Fragment>
                     <BrowserRouter>
-                        <MusicPlayer />
                         <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/search" element={<Search />} />
-                            <Route path="/collection/playlist" element={<Home />} />
-                            <Route path="/collection/tracks" element={<Home />} />
-                            <Route path="/playlist/:playlistId" element={<Playlist />} />
-                            <Route path="/album/:albumId" element={<Album />} />
-                            <Route path="/artist/:artistId" element={<Artist />} />
+                            <Route path="/" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <Home />
+                                </div>
+                            } />
+                            <Route path="/search" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <Search />
+                                </div>
+                            } />
+                            <Route path="/playlist/:playlistId" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <Playlist />
+                                </div>
+                            } />
+                            <Route path="/album/:albumId" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <Album />
+                                </div>
+                            } />
+                            <Route path="/artist/:artistId" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <Artist />
+                                </div>
+                            } />
                             {!isLoggedIn && <Route path="/login" element={<Login />} />}
                             {!isLoggedIn && <Route path="/signup" element={<SignUp />} />}
                         </Routes>

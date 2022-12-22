@@ -29,12 +29,19 @@ export const playerSlice = createSlice({
         setRepeat: (state, action) => {
             state.repeat = (action.payload === 0) ? 1: (action.payload === 1 ? 2 : 0);
         },
+        resetState: (state) => {
+            state.currentSong = -1;
+            state.songList = [];
+            state.playing = false;
+            state.repeat = 0;
+            state.random = false;
+        }
     }
 });
 
 export default playerSlice.reducer;
 
-export const { setSongList, setCurrentSong, toggleRandom, togglePlaying, setRepeat } = playerSlice.actions;
+export const { setSongList, setCurrentSong, toggleRandom, togglePlaying, setRepeat, resetState } = playerSlice.actions;
 
 export const selectCurrentSong = (state: RootState) => state.player.currentSong;
 export const selectPlaying = (state: RootState) => state.player.playing;

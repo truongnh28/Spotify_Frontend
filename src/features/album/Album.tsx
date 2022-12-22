@@ -1,14 +1,12 @@
 import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import MusicPlayer from "../../components/MusicPlayer";
 import TopBar from "../../components/TopBar";
 import { album_1 } from "../../constants/data";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import PauseIcon from '@mui/icons-material/Pause';
 import { useEffect, useState } from "react";
 import { SongExpandResponse } from "../../models/SongResponse";
@@ -16,43 +14,14 @@ import { getSongsByAlbum } from "../../services/songs";
 import { getAlbumInfo } from "../../services/albums";
 import { AlbumExpandResponse } from "../../models/AlbumResponse";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { checkLikedSong, unlikeSong, likedSong } from "../../services/interactions";
-import { selectUser } from "../auth/authSlice";
 import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
 import { convertToMinuteAndSecond } from "../../utils/convert";
+import LikeButton from "../../components/LikeButton";
 
 const styleRow = {
     "&:hover": {
         bgcolor: "hsla(0,0%,100%,.1)",
     }
-}
-
-const LikeButton = ({ song_id }: { song_id: number }) => {
-    const user = useAppSelector(selectUser);
-    const [liked, setLiked] = useState(false);
-    useEffect(() => {
-        checkLikedSong(user.user_id, song_id).then((res) => {
-            setLiked(res);
-        })
-    }, [song_id, user.user_id]);
-    const handleLikedButton = (prev: boolean, song_id: number) => {
-        if (prev) {
-            unlikeSong(user.user_id, song_id).then((res) => {
-                setLiked(false);
-            });
-        } else {
-            likedSong(user.user_id, song_id).then((res) => {
-                setLiked(true);
-            })
-        }
-    }
-    return (
-        <Typography>
-            <IconButton onClick={() => handleLikedButton(liked, song_id)}>
-                {liked ? <FavoriteIcon color="success" /> : <FavoriteBorderIcon />}
-            </IconButton>
-        </Typography>
-    )
 }
 
 const Album = () => {
@@ -68,7 +37,6 @@ const Album = () => {
         })
         getSongsByAlbum(Number(albumId)).then((res) => {
             setSongs(res.data.songs);
-            dispatch(setSongList(res.data.songs));
         })
     }, [albumId, dispatch]);
     const handlePlayButton = (index: number) => {
@@ -78,6 +46,7 @@ const Album = () => {
             if (playing === true) {
                 dispatch(setCurrentSong(index));
             } else {
+                dispatch(setSongList(songs));
                 dispatch(togglePlaying(playing));
                 dispatch(setCurrentSong(index));
             }
@@ -120,7 +89,7 @@ const Album = () => {
                             <img src={renderedAlbum.cover_img} alt="" style={{ height: "100%", width: "auto" }} />
                         </Box>
                         <Stack direction="column" justifyContent="flex-end" lineHeight="25.6px" spacing={1}>
-                            <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "4.5rem", lg: "6rem", xl: "6rem" }} fontWeight="bold">{renderedAlbum.name}</Typography>
+                            <Typography color="white" fontSize={{ xs: "2rem", sm: "2rem", md: "3.5rem", lg: "4.5rem", xl: "6rem" }} fontWeight="bold">{renderedAlbum.name}</Typography>
                             <Typography color="white" fontSize="0.875rem">
                                 <Link to={`/artist/${renderedAlbum.artist_id}`} style={{textDecoration: "none", color: "white", fontWeight:"bold"}} >{renderedAlbum.artist_name}</Link>
                                 &nbsp;

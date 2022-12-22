@@ -6,6 +6,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { resetState } from "../features/player/playerSlice";
 
 const styleAppBar = {
     height: "64px",
@@ -65,6 +66,7 @@ export default function TopBar({ currentPage } : { currentPage: string}) {
         setAnchorEl(null);
         if (wantLogout) {
             dispatch(logout());
+            dispatch(resetState());
             navigate("/");
         }
     }

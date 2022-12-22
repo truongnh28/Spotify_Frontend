@@ -8,19 +8,15 @@ export const likedSong = async (userId: number, songId: number) => {
 }
 
 export const unlikeSong = async (userId: number, songId: number) => {
-    return await axios.delete(`${UNLIKE_SONG}/${userId}/${songId}`, {
-        withCredentials: true,
-        headers: {
-            "Access-Control-Allow-Method": "GET, PUT, POST, DELETE",
-        }
-    });
+    return await axios.delete(`${UNLIKE_SONG}/${userId}/${songId}`);
 }
 
 export const checkLikedSong = async (userId: number, songId: number) => {
     const response = await getSongsLikedByUser(userId);
     const songs = response.data.songs;
     const foundSong = songs.find((song: SongResponse) => song.song_id === songId);
-    if (foundSong)
+    if (foundSong) {
         return true;
+    }
     return false;
 }

@@ -1,12 +1,9 @@
 import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, TableFooter, Button, Paper, TableCell, TableRow } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import MusicPlayer from "../../components/MusicPlayer";
 import TopBar from "../../components/TopBar";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PauseIcon from '@mui/icons-material/Pause';
 import { useEffect, useState } from "react";
 import { SongExpandResponse } from "../../models/SongResponse";
@@ -16,37 +13,8 @@ import { getSingleArtist } from "../../services/artists";
 import Avatar from "@mui/material/Avatar";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { checkLikedSong, unlikeSong, likedSong } from "../../services/interactions";
-import { selectUser } from "../auth/authSlice";
 import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
-
-const LikeButton = ({ song_id }: { song_id: number }) => {
-    const user = useAppSelector(selectUser);
-    const [liked, setLiked] = useState(false);
-    useEffect(() => {
-        checkLikedSong(user.user_id, song_id).then((res) => {
-            setLiked(res);
-        })
-    }, [song_id, user.user_id]);
-    const handleLikedButton = (prev: boolean, song_id: number) => {
-        if (prev) {
-            unlikeSong(user.user_id, song_id).then((res) => {
-                setLiked(false);
-            });
-        } else {
-            likedSong(user.user_id, song_id).then((res) => {
-                setLiked(true);
-            })
-        }
-    }
-    return (
-        <Typography>
-            <IconButton onClick={() => handleLikedButton(liked, song_id)}>
-                {liked ? <FavoriteIcon color="success" /> : <FavoriteBorderIcon />}
-            </IconButton>
-        </Typography>
-    )
-}
+import LikeButton from "../../components/LikeButton";
 
 const About = ({ artist }: { artist: ArtistResponse }) => {
     return (
@@ -66,21 +34,20 @@ const styleRow = {
 }
 
 const Artist = () => {
-    const { id } = useParams();
+    const { artistId } = useParams();
     const dispatch = useAppDispatch();
     const [artist, setArtist] = useState(null);
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
     const playing = useAppSelector(selectPlaying);
     const currentSong = useAppSelector(selectCurrentSong);
     useEffect(() => {
-        getSingleArtist(Number(id)).then((res) => {
+        getSingleArtist(Number(artistId)).then((res) => {
             setArtist(res.data.artists[0]);
         })
-        getSongsByArtist(Number(id)).then((res) => {
+        getSongsByArtist(Number(artistId)).then((res) => {
             setSongs(res.data.songs);
-            dispatch(setSongList(res.data.songs));
         })
-    }, [id, dispatch]);
+    }, [artistId, dispatch]);
     const handlePlayButton = (index: number) => {
         if (currentSong === index) {
             dispatch(togglePlaying(playing));
@@ -88,6 +55,7 @@ const Artist = () => {
             if (playing === true) {
                 dispatch(setCurrentSong(index));
             } else {
+                dispatch(setSongList(songs));
                 dispatch(togglePlaying(playing));
                 dispatch(setCurrentSong(index));
             }

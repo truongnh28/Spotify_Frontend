@@ -1,14 +1,12 @@
-import { AppBar, Box, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { AppBar, Button, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { logout, selectUser } from "../features/auth/authSlice";
+import SearchIcon from '@mui/icons-material/Search';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, MouseEvent, ChangeEvent, KeyboardEvent } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectUser, logout } from "../../features/auth/authSlice";
-import { resetState } from "../../features/player/playerSlice";
-import Nav from "../../components/Nav";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SearchIcon from "@mui/icons-material/Search";
-
+import { resetState } from "../features/player/playerSlice";
 
 const styleAppBar = {
     height: "64px",
@@ -57,13 +55,11 @@ const styleButtonUser = {
     }
 }
 
-const Search = () => {
+const TopBarDynamic = ({ currentPage } : { currentPage: string}) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const user = useAppSelector(selectUser);
-    const [input, setInput] = useState("");
-    const handleClickUser = (event: MouseEvent<HTMLButtonElement>) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClickUser = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
     const handleCloseUser = (wantLogout: boolean) => {
@@ -74,28 +70,27 @@ const Search = () => {
             navigate("/");
         }
     }
-    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const keyword = event.target.value;
-        
-        setInput(keyword);
-    }
-    const isLoggedIn = user.username.length > 0;
+    const user = useAppSelector(selectUser);
+    const isLoggedIn = user.username.length > 0 && user.code.length > 0;
+    const isSearchPage = currentPage === "Search";
     const open = Boolean(anchorEl);
-    const renderedSearchField = (
-        <TextField
-            variant="outlined"
-            size="small"
-            placeholder="What do you want to listen to?"
-            onChange={handleInputChange}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <SearchIcon />
-                    </InputAdornment>
-                ),
-            }}
-        />
-    );
+    let renderedSearchInput = null;
+    if (isSearchPage) {
+        renderedSearchInput = (
+            <TextField
+                variant="outlined"
+                size="small"
+                placeholder="What do you want to listen to?"
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    ),
+                }}
+            />
+        );
+    }
     let renderedUserButton = null;
     if (isLoggedIn) {
         renderedUserButton = (
@@ -110,17 +105,21 @@ const Search = () => {
             </div>
         );
     }
-    const topbar = (
+    let justifyContent = "flex-end";
+    if (isSearchPage) {
+        justifyContent = "space-between";
+    }
+    return (
         <AppBar sx={styleAppBar}>
-            <Stack direction="row" paddingX={4} paddingY={2} justifyContent="space-between" alignItems="center">
-                {renderedSearchField}
+            <Stack direction="row" paddingX={4} paddingY={2} justifyContent={justifyContent} alignItems="center">
+                {renderedSearchInput}
                 {isLoggedIn ? renderedUserButton : (
                     <div>
-                        <Button onClick={() => { navigate(`/signup`) }} sx={styleButtonSignup}>
+                        <Button href="/signup" sx={styleButtonSignup}>
                             <Typography sx={styleTextSignup}>Sign up</Typography>
                         </Button>
                         &nbsp;
-                        <Button onClick={() => { navigate(`/login`) }} sx={styleButtonLogin}>
+                        <Button href="/login" sx={styleButtonLogin}>
                             <Typography sx={styleTextLogin}>Log in</Typography>
                         </Button>
                     </div>
@@ -128,19 +127,5 @@ const Search = () => {
             </Stack>
         </AppBar>
     );
-    return (
-        <Grid direction="row" container height="100%">
-            <Grid item position="fixed" width="203px" height="100%">
-                <Nav currentPage="Search" />
-            </Grid>
-            <Grid item marginLeft="203px" height="100%" width="100%">
-                {topbar}
-                <Box>
-                    
-                </Box>
-            </Grid>
-        </Grid>
-    );
 }
-
-export default Search;
+export default TopBarDynamic;

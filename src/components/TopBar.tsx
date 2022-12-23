@@ -1,12 +1,11 @@
-import { AppBar, Button, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { Button, Menu, MenuItem, AppBar, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout, selectUser } from "../features/auth/authSlice";
-import SearchIcon from '@mui/icons-material/Search';
+import { resetState } from "../features/player/playerSlice";
+import { useState, MouseEvent } from "react";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { resetState } from "../features/player/playerSlice";
 
 const styleAppBar = {
     height: "64px",
@@ -55,11 +54,12 @@ const styleButtonUser = {
     }
 }
 
-export default function TopBar({ currentPage } : { currentPage: string}) {
+const TopBar = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClickUser = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const user = useAppSelector(selectUser);
+    const handleClickUser = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
     const handleCloseUser = (wantLogout: boolean) => {
@@ -70,27 +70,8 @@ export default function TopBar({ currentPage } : { currentPage: string}) {
             navigate("/");
         }
     }
-    const user = useAppSelector(selectUser);
-    const isLoggedIn = user.username.length > 0 && user.code.length > 0;
-    const isSearchPage = currentPage === "Search";
+    const isLoggedIn = user.username.length > 0;
     const open = Boolean(anchorEl);
-    let renderedSearchInput = null;
-    if (isSearchPage) {
-        renderedSearchInput = (
-            <TextField
-                variant="outlined"
-                size="small"
-                placeholder="What do you want to listen to?"
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
-                }}
-            />
-        );
-    }
     let renderedUserButton = null;
     if (isLoggedIn) {
         renderedUserButton = (
@@ -105,21 +86,16 @@ export default function TopBar({ currentPage } : { currentPage: string}) {
             </div>
         );
     }
-    let justifyContent = "flex-end";
-    if (isSearchPage) {
-        justifyContent = "space-between";
-    }
     return (
         <AppBar sx={styleAppBar}>
-            <Stack direction="row" paddingX={4} paddingY={2} justifyContent={justifyContent} alignItems="center">
-                {renderedSearchInput}
+            <Stack direction="row" paddingX={4} paddingY={2} justifyContent="flex-end" alignItems="center">
                 {isLoggedIn ? renderedUserButton : (
                     <div>
-                        <Button href="/signup" sx={styleButtonSignup}>
+                        <Button onClick={() => {navigate(`/signup`)}} sx={styleButtonSignup}>
                             <Typography sx={styleTextSignup}>Sign up</Typography>
                         </Button>
                         &nbsp;
-                        <Button href="/login" sx={styleButtonLogin}>
+                        <Button onClick={() => {navigate(`/login`)}} sx={styleButtonLogin}>
                             <Typography sx={styleTextLogin}>Log in</Typography>
                         </Button>
                     </div>
@@ -128,3 +104,5 @@ export default function TopBar({ currentPage } : { currentPage: string}) {
         </AppBar>
     );
 }
+
+export default TopBar;

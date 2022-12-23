@@ -1,7 +1,6 @@
 import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import TopBar from "../../components/TopBar";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -16,6 +15,7 @@ import { getSinglePlaylist } from "../../services/playlists";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
+import TopBar from "../../components/TopBar";
 
 const styleRow = {
     "&:hover": {
@@ -141,7 +141,7 @@ const Playlist = () => {
                 <Nav currentPage="" />
             </Grid>
             <Grid marginLeft="203px" height="100%" width="100%">
-                <TopBar currentPage="" />
+                <TopBar />
                 <Box>
                     {contentRendered}
                 </Box>

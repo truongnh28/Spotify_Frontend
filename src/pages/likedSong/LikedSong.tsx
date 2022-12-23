@@ -11,12 +11,12 @@ import { checkLikedSong, likedSong, unlikeSong } from "../../services/interactio
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import Nav from "../../components/Nav";
-import TopBar from "../../components/TopBar";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import likedSongImg from "../../assets/liked-songs.png";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import TopBar from "../../components/TopBar";
 
 const styleRow = {
     "&:hover": {
@@ -164,7 +164,7 @@ const LikedSong = () => {
                 <Nav currentPage="Liked Songs" />
             </Grid>
             <Grid marginLeft="203px" height="100%" width="100%">
-                <TopBar currentPage="" />
+                <TopBar />
                 <Box>
                     {contentRendered}
                 </Box>

@@ -1,12 +1,11 @@
 import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import TopBar from "../../components/TopBar";
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 import { useEffect, useState } from "react";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { getSongsByAlbum } from "../../services/songs";
@@ -16,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import LikeButton from "../../components/LikeButton";
+import TopBar from "../../components/TopBar";
 
 const styleRow = {
     "&:hover": {
@@ -139,7 +139,7 @@ const Album = () => {
                 <Nav currentPage="" />
             </Grid>
             <Grid marginLeft="203px" height="100%" width="100%">
-                <TopBar currentPage="" />
+                <TopBar />
                 <Box>
                     {contentRendered}
                 </Box>

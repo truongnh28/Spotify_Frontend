@@ -1,7 +1,6 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, TableFooter, Button, Paper, TableCell, TableRow } from "@mui/material";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, Button, Paper, TableCell, TableRow } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import TopBar from "../../components/TopBar";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -15,6 +14,7 @@ import { getSingleArtist } from "../../services/artists";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
+import TopBar from "../../components/TopBar";
 
 const About = ({ artist }: { artist: ArtistResponse }) => {
     return (
@@ -136,7 +136,7 @@ const Artist = () => {
                 <Nav currentPage="" />
             </Grid>
             <Grid marginLeft="203px" height="100%" width="100%">
-                <TopBar currentPage="" />
+                <TopBar />
                 <Box>
                     {contentRendered}
                 </Box>

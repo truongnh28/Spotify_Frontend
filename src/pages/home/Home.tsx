@@ -1,7 +1,6 @@
 import { Box, Grid, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
-import TopBar from "../../components/TopBar";
 import { PlaylistResponse } from "../../models/PlaylistResponse";
 import defaultImage from "../../assets/default-image.png";
 import "./Home.css";
@@ -11,6 +10,7 @@ import { getAlbumsInfo } from "../../services/albums";
 import { getAllArtist } from "../../services/artists";
 import { AlbumExpandResponse } from "../../models/AlbumResponse";
 import { ArtistResponse } from "../../models/ArtistResponse";
+import TopBar from "../../components/TopBar";
 
 const styleImgCard = {
     width: "100%",
@@ -115,7 +115,7 @@ const Home = () => {
                 <Nav currentPage="Home" />
             </Grid>
             <Grid marginLeft="203px" height="100%" width="100%">
-                <TopBar currentPage="Home" />
+                <TopBar />
                 <Box sx={{ px: 4, pt: 3 }}>
                     {renderedContent}
                 </Box>

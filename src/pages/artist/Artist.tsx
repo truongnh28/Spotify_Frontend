@@ -5,16 +5,16 @@ import TopBar from "../../components/TopBar";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import Avatar from "@mui/material/Avatar";
+import LikeButton from "../../components/LikeButton";
 import { useEffect, useState } from "react";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { getSongsByArtist } from "../../services/songs";
 import { ArtistResponse } from "../../models/ArtistResponse";
 import { getSingleArtist } from "../../services/artists";
-import Avatar from "@mui/material/Avatar";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
-import LikeButton from "../../components/LikeButton";
 
 const About = ({ artist }: { artist: ArtistResponse }) => {
     return (

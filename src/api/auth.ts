@@ -1,3 +1,5 @@
 import { BASE_URL } from "./base";
 
-export const LOGIN = `${BASE_URL}/authen/login`;
+const GROUP = `${BASE_URL}/authen`;
+export const LOGIN = `${GROUP}/login`;
+export const REGISTER = `${BASE_URL}/accounts/register`;

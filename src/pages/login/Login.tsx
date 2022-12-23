@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import logo from "../../assets/spotify-logo.png";
 import { loginSpotify } from "../../features/auth/authSlice";
+import { loginToSpotify } from "../../services/auth";
 
 const styleModal = {
     position: 'absolute' as 'absolute',
@@ -43,10 +44,16 @@ const Login = () => {
         }
         setPassword(currentPassword);
     }
-    
+    const login = async ({username, password} : {username: string; password: string}) => {
+        return await loginToSpotify({username, password});
+    }
     const handleLogin = () => {
-        dispatch(loginSpotify({username, password}));
-        navigate(`/`);
+        login({username, password}).then((res) => {
+            dispatch(loginSpotify({username, password}));
+            navigate(`/`);
+        }).catch((res) => {
+            setOpen(true);
+        })
     }
     const handleClose = () => setOpen(false);
     const canPressed = (username !== null && username.length > 0) && (password !== null && password.length > 0);

@@ -41,7 +41,6 @@ const MusicPlayer = () => {
         else
             setMute(false);
         setStateVolume(newValue as number);
-        
         audio.current.volume = (newValue as number) / 100;
     }
     const handleMuteChange = (mute: boolean) => {
@@ -152,36 +151,6 @@ const MusicPlayer = () => {
             dispatch(togglePlaying(true));
         }
     }
-    let contentRendered = (
-        <>
-            <Stack direction="row" alignItems="center" justifyContent="flex-start" minWidth="180px" width="30%" height={{ height: "56px" }}>
-            </Stack>
-            <Stack direction="column" alignItems="center" justifyContent="center" maxWidth="722px" width="40%">
-                <Stack direction="row" marginBottom="8px">
-                    <Stack direction="row" justifyContent="flex-end">
-                        <IconButton><ShuffleIcon /></IconButton>
-                        <IconButton><SkipPreviousIcon /></IconButton>
-                    </Stack>
-                    <IconButton><PlayCircleIcon /></IconButton>
-                    <Stack direction="row" justifyContent="flex-start">
-                        <IconButton><SkipNextIcon /></IconButton>
-                        <IconButton><RepeatIcon /></IconButton>
-                    </Stack>
-                </Stack>
-                <Stack direction="row" width="100%" alignItems="center" gap={2}>
-                    <Typography textAlign="right" minWidth="40px" fontWeight="bold" fontSize="0.6785rem">0:00</Typography>
-                    <Slider value={currentTime} />
-                    <Typography textAlign="left" minWidth="40px" fontWeight="bold" fontSize="0.6785rem">0:00</Typography>
-                </Stack>
-            </Stack>
-            <Stack direction="row" alignItems="center" justifyContent="flex-end" minWidth="180px" width="30%">
-                <Stack direction="row" width="100%" alignItems="center">
-                    <IconButton><VolumeUpIcon /></IconButton>
-                    <Slider value={stateVolume} size="small" onChange={handleVolumeChange} />
-                </Stack>
-            </Stack>
-        </>
-    )
     if (currentSong !== -1) {
         if (audio.current.src === "" || audio.current.src !== songList[currentSong].url) {
             audio.current.src = songList[currentSong].url;
@@ -193,7 +162,6 @@ const MusicPlayer = () => {
         }
         if (playing) {
             if (user.username.length === 0) {
-                console.log("Bay vô");
                 audio.current.pause();
             } else {
                 audio.current.play();
@@ -201,50 +169,59 @@ const MusicPlayer = () => {
         } else {
             audio.current.pause();
         }
-        contentRendered = (
-            <>
-                <Stack direction="row" alignItems="center" justifyContent="flex-start" minWidth="180px" width="30%" height={{ height: "56px" }}>
-                    <Box marginX={2} lineHeight="1.6" maxHeight="100%">
-                        <Stack direction="column">
-                            <Link to={`/album/${songList[currentSong].album_id}`} style={{ textDecoration: "none", color: "white", fontWeight: "bold" }}>{songList[currentSong].name}</Link>
-                            <Link to={`/artist/${songList[currentSong].artist_id}`} style={{ textDecoration: "none", color: "white", fontSize: "0.6875rem" }}>{songList[currentSong].artist_name}</Link>
-                        </Stack>
-                    </Box>
-                    <LikeButton song_id={songList[currentSong].song_id} />
-                </Stack>
-                <Stack direction="column" alignItems="center" justifyContent="center" maxWidth="722px" width="40%">
-                    <Stack direction="row" marginBottom="8px">
-                        <Stack direction="row" justifyContent="flex-end">
-                            <IconButton onClick={handleRandomChange}><ShuffleIcon color={random ? "success" : "inherit"} /></IconButton>
-                            <IconButton onClick={handleSkipPrevious}><SkipPreviousIcon /></IconButton>
-                        </Stack>
-                        <IconButton onClick={toggleAudio}>
-                            {playing ? <PauseCircleIcon /> : <PlayCircleIcon />}
-                        </IconButton>
-                        <Stack direction="row" justifyContent="flex-start">
-                            <IconButton onClick={handleSkipNext}><SkipNextIcon /></IconButton>
-                            <IconButton onClick={handleRepeatChange}>
-                                {repeat === 0 ? <RepeatIcon /> : (repeat === 1 ? <RepeatIcon color="success" /> : <RepeatOneIcon color="success" />)}
-                            </IconButton>
-                        </Stack>
-                    </Stack>
-                    <Stack direction="row" width="100%" alignItems="center" gap={2}>
-                        <Typography textAlign="right" minWidth="40px" fontWeight="bold" fontSize="0.6785rem">{convertToMinuteAndSecond(currentTime)}</Typography>
-                        <Slider value={currentTime} onChange={handleTimeChange} />
-                        <Typography textAlign="left" minWidth="40px" fontWeight="bold" fontSize="0.6785rem">{convertToMinuteAndSecond(songList[currentSong].length)}</Typography>
-                    </Stack>
-                </Stack>
-                <Stack direction="row" alignItems="center" justifyContent="flex-end" minWidth="180px" width="30%">
-                    <Stack direction="row" width="100%" alignItems="center">
-                        <IconButton onClick={() => handleMuteChange(mute)}>
-                            { mute ? <VolumeMuteIcon /> : <VolumeUpIcon />}
-                        </IconButton>
-                        <Slider size="small" value={stateVolume} onChange={handleVolumeChange} />
-                    </Stack>
-                </Stack>
-            </>
-        );
+    } else {
+        audio.current.pause();
+        audio.current.currentTime = 0;
+        audio.current.src = "";
+        audio.current.volume = 1;
     }
+    const contentRendered = (
+        <>
+            <Stack direction="row" alignItems="center" justifyContent="flex-start" minWidth="180px" width="30%" height={{ height: "56px" }}>
+                {currentSong !== -1 &&
+                    <>
+                        <Box marginX={2} lineHeight="1.6" maxHeight="100%">
+                            <Stack direction="column">
+                                <Link to={`/album/${songList[currentSong].album_id}`} style={{ textDecoration: "none", color: "white", fontWeight: "bold" }}>{songList[currentSong].name}</Link>
+                                <Link to={`/artist/${songList[currentSong].artist_id}`} style={{ textDecoration: "none", color: "white", fontSize: "0.6875rem" }}>{songList[currentSong].artist_name}</Link>
+                            </Stack>
+                        </Box>
+                        <LikeButton song_id={songList[currentSong].song_id} />
+                    </>
+                }
+            </Stack>
+            <Stack direction="column" alignItems="center" justifyContent="center" maxWidth="722px" width="40%">
+                <Stack direction="row" marginBottom="8px">
+                    <Stack direction="row" justifyContent="flex-end">
+                        <IconButton onClick={handleRandomChange}><ShuffleIcon color={random ? "success" : "inherit"} /></IconButton>
+                        <IconButton onClick={handleSkipPrevious}><SkipPreviousIcon /></IconButton>
+                    </Stack>
+                    <IconButton onClick={toggleAudio}>
+                        {playing ? <PauseCircleIcon /> : <PlayCircleIcon />}
+                    </IconButton>
+                    <Stack direction="row" justifyContent="flex-start">
+                        <IconButton onClick={handleSkipNext}><SkipNextIcon /></IconButton>
+                        <IconButton onClick={handleRepeatChange}>
+                            {repeat === 0 ? <RepeatIcon /> : (repeat === 1 ? <RepeatIcon color="success" /> : <RepeatOneIcon color="success" />)}
+                        </IconButton>
+                    </Stack>
+                </Stack>
+                <Stack direction="row" width="100%" alignItems="center" gap={2}>
+                    <Typography textAlign="right" minWidth="40px" fontWeight="bold" fontSize="0.6785rem">{currentSong === -1 ? "0:00" : convertToMinuteAndSecond(currentTime)}</Typography>
+                    <Slider value={currentTime} onChange={handleTimeChange} />
+                    <Typography textAlign="left" minWidth="40px" fontWeight="bold" fontSize="0.6785rem">{currentSong === -1 ? "0:00": convertToMinuteAndSecond(songList[currentSong].length)}</Typography>
+                </Stack>
+            </Stack>
+            <Stack direction="row" alignItems="center" justifyContent="flex-end" minWidth="180px" width="30%">
+                <Stack direction="row" width="100%" alignItems="center">
+                    <IconButton onClick={() => handleMuteChange(mute)}>
+                        {mute ? <VolumeMuteIcon /> : <VolumeUpIcon />}
+                    </IconButton>
+                    <Slider size="small" value={stateVolume} onChange={handleVolumeChange} />
+                </Stack>
+            </Stack>
+        </>
+    );
     return (
         <Paper sx={{ position: "fixed", zIndex: "4", bottom: 0, left: 0, right: 0, height: "90px" }}>
             <audio ref={audio} onTimeUpdate={

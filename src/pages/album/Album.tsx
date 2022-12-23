@@ -1,4 +1,4 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter } from "@mui/material";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
 import TopBar from "../../components/TopBar";
@@ -124,12 +124,9 @@ const Album = () => {
                                     <TableBody>
                                         {renderedSongs}
                                     </TableBody>
-                                    <TableFooter>
-                                        <Box height="90px" />
-                                    </TableFooter>
                                 </Table>
                             </TableContainer>
-                            <Box height="90px" />
+                            <Box height="180px" />
                         </Box>
                     </Box>
                 </Box>

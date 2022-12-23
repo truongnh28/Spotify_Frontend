@@ -13,6 +13,7 @@ import { useAppDispatch } from "./app/hooks";
 import { load } from "./features/auth/authSlice";
 import MusicPlayer from "./components/MusicPlayer";
 import React from "react";
+import LikedSong from "./pages/likedSong/LikedSong";
 function App() {
     const dispatch = useAppDispatch();
     const user = getUserFromLocalStorage();
@@ -57,6 +58,12 @@ function App() {
                                     <Artist />
                                 </div>
                             } />
+                            <Route path="/collection/tracks" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <LikedSong />
+                                </div>
+                            }/>
                             {!isLoggedIn && <Route path="/login" element={<Login />} />}
                             {!isLoggedIn && <Route path="/signup" element={<SignUp />} />}
                         </Routes>

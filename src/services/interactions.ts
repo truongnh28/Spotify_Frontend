@@ -8,7 +8,7 @@ export const likedSong = async (userId: number, songId: number) => {
 }
 
 export const unlikeSong = async (userId: number, songId: number) => {
-    return await axios.delete(`${UNLIKE_SONG}/${userId}/${songId}`);
+    return await axios.post(`${UNLIKE_SONG}/${userId}/${songId}`);
 }
 
 export const checkLikedSong = async (userId: number, songId: number) => {

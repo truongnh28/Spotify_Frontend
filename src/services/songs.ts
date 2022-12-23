@@ -1,7 +1,7 @@
 import axios from "axios"
 import { GET_ALL_SONGS, GET_SONGS_BY_ALBUM, GET_SONGS_BY_ARTIST, GET_SONGS_BY_NAME, GET_SONGS_BY_PLAYLIST, GET_SONGS_LIKED_BY_USER } from "../api/songs"
-import { getAllAlbum, getSingleAlbum } from "./albums";
-import { getAllArtist, getSingleArtist } from "./artists";
+import { getAllAlbum } from "./albums";
+import { getAllArtist } from "./artists";
 import { SongExpandResponse, SongResponse } from "../models/SongResponse";
 import { AlbumResponse } from "../models/AlbumResponse";
 import { ArtistResponse } from "../models/ArtistResponse";
@@ -52,37 +52,24 @@ export const getSongsInfoOfPlaylist = async (playlistId: number) => {
     }
 }
 
-export const getSongsInfoOfPlaylistV2 = async (playlistId: number) => {
+export const getSongsInfoOfLikedSong = async (userId: number) => {
     try {
-        const response = await getSongsByPlaylist(playlistId);
-        const songs = response.data.songs;
+        const responses = await Promise.all([getSongsLikedByUser(userId), getAllAlbum(), getAllArtist()]);
+        const songs: SongResponse[] = responses[0].data.songs;
+        const albums: AlbumResponse[] = responses[1].data.albums;
+        const artists: ArtistResponse[] = responses[2].data.artists;
         const result: SongExpandResponse[] = [];
-        songs.forEach(async (song: SongResponse) => {
-            const responses = await Promise.all([getSingleAlbum(song.album_id), getSingleArtist(song.artist_id)]);
-            const album = responses[0].data.albums;
-            const artist = responses[1].data.artists;
-            result.push({...song, album_name: album.name, artist_name: artist.name});
-        })
+        songs.forEach((song: SongResponse, id) => {
+            const album = albums.find((album: AlbumResponse) => album.album_id === song.album_id);
+            const artist = artists.find((artist: ArtistResponse) => artist.artist_id === song.album_id);
+            result.push({
+                ...song,
+                album_name: album?.name,
+                artist_name: artist?.name,
+            })
+        });
         return result;
     } catch(error) {
-        return [];
-    }
-}
-
-export const getSongs = async () => {
-    try {
-        const responses = await Promise.all([getAllSongs(), getAllAlbum(), getAllArtist()]);
-        const songs = responses[0].data.songs;
-        const albums = responses[1].data.albums;
-        const artists = responses[2].data.artists;
-        let result: SongExpandResponse[] = [];
-        songs.forEach((song: SongResponse) => {
-            const album = albums.find((album: AlbumResponse) => album.album_id === song.album_id);
-            const artist = artists.find((artist: ArtistResponse) => artist.artist_id === song.artist_id);
-            result.push({...song, album_name: album.name, artist_name: artist.name});
-        })
-        return result;
-    } catch (error) {
         return [];
     }
 }

@@ -7,9 +7,9 @@ import defaultImage from "../../assets/default-image.png";
 import "./Home.css";
 import { useEffect, useState } from "react";
 import { getAllPlaylist } from "../../services/playlists";
-import { getAllAlbum } from "../../services/albums";
+import { getAlbumsInfo } from "../../services/albums";
 import { getAllArtist } from "../../services/artists";
-import { AlbumResponse } from "../../models/AlbumResponse";
+import { AlbumExpandResponse } from "../../models/AlbumResponse";
 import { ArtistResponse } from "../../models/ArtistResponse";
 
 const styleImgCard = {
@@ -47,14 +47,14 @@ export const Card = ({ id, imgSrc, title, description, link }: { id: number, img
 
 const Home = () => {
     const [playlists, setPlaylists] = useState([]);
-    const [albums, setAlbums] = useState([]);
+    const [albums, setAlbums] = useState([] as AlbumExpandResponse[]);
     const [artists, setArtists] = useState([]);
     useEffect(() => {
         getAllPlaylist().then((res) => {
             setPlaylists(res.data.play_lists);
         });
-        getAllAlbum().then((res) => {
-            setAlbums(res.data.albums);
+        getAlbumsInfo().then((res) => {
+            setAlbums(res);
         })
         getAllArtist().then((res) => {
             setArtists(res.data.artists);
@@ -86,9 +86,9 @@ const Home = () => {
                 </Grid>
             </Grid>
             <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                {albums.map((album: AlbumResponse) => (
+                {albums.map((album: AlbumExpandResponse) => (
                     <Grid item key={album.album_id} xs={1} sm={1} md={1} lg={1} xl={1}>
-                        <Card id={album.album_id} imgSrc={album.cover_img} title={album.name} description={""} link="/album" />
+                        <Card id={album.album_id} imgSrc={album.cover_img} title={album.name} description={album.artist_name as string} link="/album" />
                     </Grid>
                 ))}
             </Grid>
@@ -103,7 +103,7 @@ const Home = () => {
             <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
                 {artists.map((artirst: ArtistResponse) => (
                     <Grid item key={artirst.artist_id} xs={1} sm={1} md={1} lg={1} xl={1}>
-                        <Card id={artirst.artist_id} imgSrc={artirst.coverImg} title={artirst.name} description={""} link="/artist" />
+                        <Card id={artirst.artist_id} imgSrc={artirst.coverImg} title={artirst.name} description={"Artist"} link="/artist" />
                     </Grid>
                 ))}
             </Grid>

@@ -1,7 +1,7 @@
 import axios from "axios"
 import { GET_ALBUM_BY_NAME, GET_ALL_ALBUMS, GET_SINGLE_ALBUM } from "../api/albums"
 import { getAllArtist } from "./artists";
-import { AlbumResponse } from "../models/AlbumResponse";
+import { AlbumResponse, AlbumExpandResponse } from "../models/AlbumResponse";
 import { ArtistResponse } from "../models/ArtistResponse";
 
 export const getAllAlbum = async () => {
@@ -28,5 +28,21 @@ export const getAlbumInfo = async (albumId: number) => {
         }
     } catch(error) {
         return undefined;
+    }
+}
+
+export const getAlbumsInfo = async () => {
+    try {
+        const responses = await Promise.all([getAllAlbum(), getAllArtist()]);
+        const albums: AlbumResponse[] = responses[0].data.albums;
+        const artists: ArtistResponse[] = responses[1].data.artists;
+        const res: AlbumExpandResponse[] = [];
+        albums.forEach((album: AlbumResponse) => {
+            const artist = artists.find((artist: ArtistResponse) => artist.artist_id === album.artist_id);
+            res.push({...album, artist_name: artist?.name});
+        })
+        return res;
+    } catch(error) {
+        return [];
     }
 }

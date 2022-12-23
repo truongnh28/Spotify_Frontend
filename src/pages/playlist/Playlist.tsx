@@ -128,7 +128,7 @@ const Playlist = () => {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                            <Box height="90px" />
+                            <Box height="180px" />
                         </Box>
                     </Box>
                 </Box>

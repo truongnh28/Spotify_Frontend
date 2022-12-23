@@ -119,9 +119,6 @@ const Artist = () => {
                                     <TableBody>
                                         {renderedSongs}
                                     </TableBody>
-                                    <TableFooter>
-                                        <Box height="90px" />
-                                    </TableFooter>
                                 </Table>
                             </TableContainer>
                             <Typography fontSize="1.5rem">About</Typography>

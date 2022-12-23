@@ -13,7 +13,7 @@ import { getSingleArtist } from "../../services/artists";
 import Avatar from "@mui/material/Avatar";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
+import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 import LikeButton from "../../components/LikeButton";
 
 const About = ({ artist }: { artist: ArtistResponse }) => {

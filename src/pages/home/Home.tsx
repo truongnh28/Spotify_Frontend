@@ -1,7 +1,6 @@
 import { Box, Grid, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
-import MusicPlayer from "../../components/MusicPlayer";
 import TopBar from "../../components/TopBar";
 import { PlaylistResponse } from "../../models/PlaylistResponse";
 import defaultImage from "../../assets/default-image.png";

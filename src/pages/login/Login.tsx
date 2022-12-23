@@ -3,7 +3,7 @@ import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import logo from "../../assets/spotify-logo.png";
-import { loginSpotify } from "../auth/authSlice";
+import { loginSpotify } from "../../features/auth/authSlice";
 
 const styleModal = {
     position: 'absolute' as 'absolute',

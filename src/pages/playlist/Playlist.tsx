@@ -7,6 +7,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import LikeButton from "../../components/LikeButton";
 import { useEffect, useState } from "react";
 import { PlaylistResponse } from "../../models/PlaylistResponse";
 import { SongExpandResponse } from "../../models/SongResponse";
@@ -14,8 +15,7 @@ import { getSongsInfoOfPlaylist } from "../../services/songs";
 import { getSinglePlaylist } from "../../services/playlists";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
-import LikeButton from "../../components/LikeButton";
+import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 
 const styleRow = {
     "&:hover": {

@@ -18,7 +18,7 @@ interface LinkItemProps {
     to: string;
     name: string;
     icon: any;
-    current: boolean;
+    current: string;
 }
 
 const LinkItem = forwardRef<any, LinkItemProps>((props: LinkItemProps, ref) => {
@@ -26,7 +26,7 @@ const LinkItem = forwardRef<any, LinkItemProps>((props: LinkItemProps, ref) => {
     return (
         <div {...props} ref={ref}>
             <Link to={to} style={{ textDecoration: "none" }}>
-                <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={current ? { ...style, color: "white" } : style}>
+                <Stack direction="row" spacing={1} paddingX={3} height="40px" sx={current === "true" ? { ...style, color: "white" } : style}>
                     {icon}
                     <Typography><b>{name}</b></Typography>
                 </Stack>
@@ -39,8 +39,8 @@ const Nav = ({ currentPage }: { currentPage: string}) => {
     const user = useAppSelector(selectUser);
     const isLoggedIn = user.username.length > 0 && user.code.length > 0;
     const renderedFirstNav = FIRST_NAV.map(navItem => {
-        const isCurrent = currentPage === navItem.name;
-        const icon = isCurrent ? navItem.icon.current : navItem.icon.notCurrent;
+        const isCurrentPage = currentPage === navItem.name;
+        const icon = isCurrentPage ? navItem.icon.current : navItem.icon.notCurrent;
         const changePathAndBlockEvent = (!isLoggedIn && navItem.name === "Your Library");
         let to = navItem.link;
         if (changePathAndBlockEvent) {
@@ -49,7 +49,7 @@ const Nav = ({ currentPage }: { currentPage: string}) => {
         return (
             <li key={navItem.name}>
                 <Tooltip title={changePathAndBlockEvent ? "You must log in first" : null} arrow placement="right-start">
-                    <LinkItem to={to} name={navItem.name} current={isCurrent} icon={icon} />
+                    <LinkItem to={to} name={navItem.name} current={isCurrentPage.toString()} icon={icon} />
                 </Tooltip>
             </li>
         )
@@ -63,7 +63,7 @@ const Nav = ({ currentPage }: { currentPage: string}) => {
         return (
             <li key={navItem.name}>
                 <Tooltip title={!isLoggedIn ? "You must log in first" : null} arrow placement="right-start">
-                    <LinkItem to={to} name={navItem.name} current={isCurrent} icon={navItem.icon} />
+                    <LinkItem to={to} name={navItem.name} current={isCurrent.toString()} icon={navItem.icon} />
                 </Tooltip>
             </li>
         );

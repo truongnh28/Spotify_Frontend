@@ -2,7 +2,6 @@ import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableH
 import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
 import TopBar from "../../components/TopBar";
-import { album_1 } from "../../constants/data";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -14,7 +13,7 @@ import { getSongsByAlbum } from "../../services/songs";
 import { getAlbumInfo } from "../../services/albums";
 import { AlbumExpandResponse } from "../../models/AlbumResponse";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../player/playerSlice";
+import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import LikeButton from "../../components/LikeButton";
 
@@ -95,7 +94,7 @@ const Album = () => {
                                 &nbsp;
                                 &#x2022;
                                 &nbsp;
-                                {album_1.length} songs
+                                {songs.length} songs
                             </Typography>
                         </Stack>
                     </Stack>

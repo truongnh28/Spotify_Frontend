@@ -55,4 +55,4 @@ export const SECOND_NAV = [
         link: "/collection/tracks",
         icon: <FavoriteIcon />,
     },
-]
+];

@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from "@mui/material";
+import { AppBar, Box, Button, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, MouseEvent, ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -10,6 +10,7 @@ import { ArtistResponse } from "../../models/ArtistResponse";
 import { PlaylistExpandResponse } from "../../models/PlaylistResponse";
 import { AlbumExpandResponse } from "../../models/AlbumResponse";
 import { convertToMinuteAndSecond } from "../../utils/convert";
+import { MAX_CARD_COUNT, MAX_SONGS_COUNT } from "../../constants/UI";
 import Nav from "../../components/Nav";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -18,7 +19,9 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LikeButton from "../../components/LikeButton";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import { MAX_CARD_COUNT, MAX_SONGS_COUNT } from "../../constants/UI";
+import ClearIcon from '@mui/icons-material/Clear';
+import OutlinedInput from "@mui/material/OutlinedInput";
+import MicIcon from '@mui/icons-material/Mic';
 
 
 const styleAppBar = {
@@ -185,7 +188,6 @@ const Search = () => {
                 setAlbums(res[1] as AlbumExpandResponse[]);
                 setArtists(res[2] as ArtistResponse[]);
                 setPlaylists(res[3] as PlaylistExpandResponse[]);
-                console.log(res[0], res[1], res[2], res[3]);
             })
         }
         setInput(keyword);
@@ -207,18 +209,30 @@ const Search = () => {
             results.push("Albums");
     }
     const renderedSearchField = (
-        <TextField
-            variant="outlined"
+        <OutlinedInput
             size="small"
             placeholder="What do you want to listen to?"
             onChange={handleInputChange}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <SearchIcon />
+            value={input}
+            startAdornment={
+                <InputAdornment position="start">
+                    <SearchIcon />
+                </InputAdornment>
+            }
+            endAdornment={
+                <>
+                    {input.length > 0 ? (
+                        <IconButton onClick={() => {setInput("")}}>
+                            <ClearIcon />
+                        </IconButton>
+                    ): undefined}
+                    <InputAdornment position="end">
+                        <IconButton>
+                            <MicIcon />
+                        </IconButton>
                     </InputAdornment>
-                ),
-            }}
+                </>
+            }
         />
     );
     let renderedUserButton = null;
@@ -413,7 +427,7 @@ const Search = () => {
                                             <Grid item>
                                                 <Typography onClick={() => { setValue(results.indexOf("Artists") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
                                             </Grid>
-                                        ): undefined
+                                        ) : undefined
                                     }
                                 </Grid>
                             ) : undefined
@@ -468,8 +482,8 @@ const Search = () => {
             <Grid item marginLeft="203px" height="100%" width="100%">
                 {renderedTopbar}
                 <Box sx={{ px: 4, pt: 3 }}>
-                    {results.length > 0 ? renderedContent : 
-                    (input.length > 0 ? renderedNotFoundResults : renderedUserSearch)}
+                    {results.length > 0 ? renderedContent :
+                        (input.length > 0 ? renderedNotFoundResults : renderedUserSearch)}
                 </Box>
                 <Box height="120px" width="100%" />
             </Grid>

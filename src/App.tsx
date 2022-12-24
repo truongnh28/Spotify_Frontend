@@ -64,6 +64,12 @@ function App() {
                                     <LikedSong />
                                 </div>
                             }/>
+                            <Route path="/search" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <Search />
+                                </div>
+                            }/>
                             {!isLoggedIn && <Route path="/login" element={<Login />} />}
                             {!isLoggedIn && <Route path="/signup" element={<SignUp />} />}
                         </Routes>

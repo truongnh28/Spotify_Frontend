@@ -56,3 +56,6 @@ export const SECOND_NAV = [
         icon: <FavoriteIcon />,
     },
 ];
+
+export const MAX_CARD_COUNT = 5;
+export const MAX_SONGS_COUNT = 4;

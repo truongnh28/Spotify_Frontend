@@ -1,18 +1,24 @@
-import { AppBar, Box, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useState, MouseEvent, ChangeEvent } from "react";
+import { AppBar, Box, Button, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, TextField, Typography } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import React, { useState, MouseEvent, ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectUser, logout } from "../../features/auth/authSlice";
-import { resetState } from "../../features/player/playerSlice";
-import Nav from "../../components/Nav";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SearchIcon from "@mui/icons-material/Search";
+import { resetState, selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 import { search } from "../../services/search";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { ArtistResponse } from "../../models/ArtistResponse";
 import { PlaylistExpandResponse } from "../../models/PlaylistResponse";
 import { AlbumExpandResponse } from "../../models/AlbumResponse";
+import { convertToMinuteAndSecond } from "../../utils/convert";
+import Nav from "../../components/Nav";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchIcon from "@mui/icons-material/Search";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import LikeButton from "../../components/LikeButton";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import { MAX_CARD_COUNT, MAX_SONGS_COUNT } from "../../constants/UI";
 
 
 const styleAppBar = {
@@ -77,7 +83,13 @@ const styleCard = {
     }
 }
 
-export const Card = ({ id, imgSrc, title, description, link }: { id: number, imgSrc: string, title: string, description: string; link: string }) => {
+const styleRow = {
+    "&:hover": {
+        bgcolor: "hsla(0,0%,100%,.1)",
+    }
+}
+
+const Card = ({ id, imgSrc, title, description, link }: { id: number, imgSrc: string, title: string, description: string; link: string }) => {
     const navigate = useNavigate();
     const handleClickCard = () => {
         navigate(`${link}/${id}`);
@@ -95,19 +107,68 @@ export const Card = ({ id, imgSrc, title, description, link }: { id: number, img
     );
 }
 
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+}
+
+const TabPanel = (props: TabPanelProps) => {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`tabpanel-${index}`}
+            aria-labelledby={`tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <>
+                    {children}
+                </>
+            )}
+        </div>
+    );
+}
+
+const a11yProps = (index: number) => {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    }
+}
+
 const Search = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const user = useAppSelector(selectUser);
     const [input, setInput] = useState("");
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
     const [artists, setArtists] = useState([] as ArtistResponse[]);
     const [playlists, setPlaylists] = useState([] as PlaylistExpandResponse[]);
     const [albums, setAlbums] = useState([] as AlbumExpandResponse[]);
+    const [value, setValue] = useState(0);
+    const user = useAppSelector(selectUser);
+    const playing = useAppSelector(selectPlaying);
+    const currentSong = useAppSelector(selectCurrentSong);
     const handleClickUser = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
+    const handlePlayButton = (index: number) => {
+        if (currentSong === index) {
+            dispatch(togglePlaying(playing));
+        } else {
+            if (playing === true) {
+                dispatch(setCurrentSong(index));
+            } else {
+                dispatch(setSongList(songs));
+                dispatch(togglePlaying(playing));
+                dispatch(setCurrentSong(index));
+            }
+        }
+    }
     const handleCloseUser = (wantLogout: boolean) => {
         setAnchorEl(null);
         if (wantLogout) {
@@ -124,12 +185,27 @@ const Search = () => {
                 setAlbums(res[1] as AlbumExpandResponse[]);
                 setArtists(res[2] as ArtistResponse[]);
                 setPlaylists(res[3] as PlaylistExpandResponse[]);
+                console.log(res[0], res[1], res[2], res[3]);
             })
         }
         setInput(keyword);
     }
+    const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    }
     const isLoggedIn = user.username.length > 0;
     const open = Boolean(anchorEl);
+    let results: string[] = [];
+    if (input.length > 0) {
+        if (artists.length > 0)
+            results.push("Artists");
+        if (songs.length > 0)
+            results.push("Songs");
+        if (playlists.length > 0)
+            results.push("Playlists");
+        if (albums.length > 0)
+            results.push("Albums");
+    }
     const renderedSearchField = (
         <TextField
             variant="outlined"
@@ -159,6 +235,16 @@ const Search = () => {
             </div>
         );
     }
+    const renderedUserSearch = (
+        <Stack height="calc(100vh - 90px - 64px)" alignItems="center" justifyContent="center">
+            <Typography fontSize="1.5rem" fontWeight="bold">Type on box "What do you want to listen" to search</Typography>
+        </Stack>
+    );
+    const renderedNotFoundResults = (
+        <Stack height="calc(100vh - 90px - 64px)" alignItems="center" justifyContent="center">
+            <Typography fontSize="1.5rem" fontWeight="bold">No results found for "{input}"</Typography>
+        </Stack>
+    )
     const renderedTopbar = (
         <AppBar sx={styleAppBar}>
             <Stack direction="row" paddingX={4} paddingY={2} justifyContent="space-between" alignItems="center">
@@ -177,70 +263,200 @@ const Search = () => {
             </Stack>
         </AppBar>
     );
-    const renderedContent = (
+    const renderedSongs = songs.slice(0, value === 0 ? Math.min(MAX_SONGS_COUNT, songs.length) : songs.length).map((song: SongExpandResponse, index) => {
+        const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
+        const time = convertToMinuteAndSecond(length);
+        return (
+            <TableRow key={song_id} sx={styleRow}>
+                <TableCell sx={{ paddingX: 0 }}>
+                    <IconButton onClick={() => handlePlayButton(index)}>
+                        {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                </TableCell>
+                <TableCell>
+                    <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                    <Link to={`/artist/${artist_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none" }}>{artist_name}</Link>
+                </TableCell>
+                <TableCell>
+                    <Link to={`/album/${album_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none" }}>{album_name}</Link>
+                </TableCell>
+                <TableCell>
+                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                        <LikeButton song_id={song_id} />
+                        <Typography>{time}</Typography>
+                    </Stack>
+                </TableCell>
+            </TableRow>
+        );
+    });
+    const renderedTableSongs = (
         <>
             {
-                playlists.length > 0 ?
+                songs.length > 0 ? (
                     <>
-                        <Grid sx={{ pb: 2 }} container justifyContent="space-between" alignItems="center" spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                            <Grid item>
-                                <Typography fontSize="1.5rem">Playlists</Typography>
-                            </Grid>
-                            <Grid item>
-                                <Typography fontSize="0.75rem">SHOW ALL</Typography>
-                            </Grid>
-                        </Grid>
+                        {
+                            value === 0 ? (
+                                <Grid sx={{ pb: 2 }} container justifyContent="space-between" alignItems="center" spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
+                                    <Grid item>
+                                        <Typography fontSize="1.5rem">Songs</Typography>
+                                    </Grid>
+                                    {
+                                        songs.length > MAX_SONGS_COUNT ? (
+                                            <Grid item>
+                                                <Typography onClick={() => { setValue(results.indexOf("Songs") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
+                                            </Grid>
+                                        ) : undefined
+                                    }
+                                </Grid>
+                            ) : undefined
+                        }
+                        <TableContainer>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell align="left"><Typography color="#b3b3b3">#</Typography></TableCell>
+                                        <TableCell align="left"><Typography color="#b3b3b3">TITLE</Typography></TableCell>
+                                        <TableCell align="left"><Typography color="#b3b3b3">ALBUM</Typography></TableCell>
+                                        <TableCell align="right"><Typography color="#b3b3b3"><AccessTimeIcon /></Typography></TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {renderedSongs}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <Box height="20px" />
+                    </>
+                ) : undefined
+            }
+        </>
+    );
+    const renderedPlaylists = (
+        <>
+            {
+                playlists.length > 0 ? (
+                    <>
+                        {
+                            value === 0 ? (
+                                <Grid sx={{ pb: 2 }} container justifyContent="space-between" alignItems="center" spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
+                                    <Grid item>
+                                        <Typography fontSize="1.5rem">Playlists</Typography>
+                                    </Grid>
+                                    {
+                                        playlists.length > MAX_SONGS_COUNT ? (
+                                            <Grid item>
+                                                <Typography onClick={() => { setValue(results.indexOf("Playlists") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
+                                            </Grid>
+                                        ) : undefined
+                                    }
+                                </Grid>
+                            ) : undefined
+                        }
                         <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                            {playlists.map((playlist: PlaylistExpandResponse) => (
+                            {playlists.slice(0, value === 0 ? Math.min(playlists.length, MAX_CARD_COUNT) : playlists.length).map((playlist: PlaylistExpandResponse) => (
                                 <Grid item key={playlist.play_list_id} xs={1} sm={1} md={1} lg={1} xl={1}>
                                     <Card id={playlist.play_list_id} imgSrc={playlist.cover_img} title={playlist.name} description={""} link="/playlist" />
                                 </Grid>
                             ))}
                         </Grid>
                     </>
-                : undefined
+                ) : undefined
             }
+        </>
+    );
+    const renderedAlbums = (
+        <>
             {
-                albums.length > 0 ?
+                albums.length > 0 ? (
                     <>
-                        <Grid sx={{ pb: 2 }} container justifyContent="space-between" alignItems="center" spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                            <Grid item>
-                                <Typography fontSize="1.5rem">Albums</Typography>
-                            </Grid>
-                            <Grid item>
-                                <Typography fontSize="0.75rem">SHOW ALL</Typography>
-                            </Grid>
-                        </Grid>
+                        {
+                            value === 0 ? (
+                                <Grid sx={{ pb: 2 }} container justifyContent="space-between" alignItems="center" spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
+                                    <Grid item>
+                                        <Typography fontSize="1.5rem">Albums</Typography>
+                                    </Grid>
+                                    {
+                                        albums.length > MAX_SONGS_COUNT ? (
+                                            <Grid item>
+                                                <Typography onClick={() => { setValue(results.indexOf("Albums") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
+                                            </Grid>
+                                        ) : undefined
+                                    }
+                                </Grid>
+                            ) : undefined
+                        }
                         <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                            {albums.map((album: AlbumExpandResponse) => (
+                            {albums.slice(0, value === 0 ? Math.min(albums.length, MAX_CARD_COUNT) : albums.length).map((album: AlbumExpandResponse) => (
                                 <Grid item key={album.album_id} xs={1} sm={1} md={1} lg={1} xl={1}>
                                     <Card id={album.album_id} imgSrc={album.cover_img} title={album.name} description={album.artist_name as string} link="/album" />
                                 </Grid>
                             ))}
                         </Grid>
                     </>
-                    : undefined
+                ) : undefined
             }
+        </>
+    )
+    const renderedArtists = (
+        <>
             {
-                artists.length > 0 ?
+                artists.length > 0 ? (
                     <>
-                        <Grid sx={{ pb: 2 }} container justifyContent="space-between" alignItems="center" spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                            <Grid item>
-                                <Typography fontSize="1.5rem">Artists</Typography>
-                            </Grid>
-                            <Grid item>
-                                <Typography fontSize="0.75rem">SHOW ALL</Typography>
-                            </Grid>
-                        </Grid>
+                        {
+                            value === 0 ? (
+                                <Grid sx={{ pb: 2 }} container justifyContent="space-between" alignItems="center" spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
+                                    <Grid item>
+                                        <Typography fontSize="1.5rem">Artists</Typography>
+                                    </Grid>
+                                    {
+                                        artists.length > MAX_SONGS_COUNT ? (
+                                            <Grid item>
+                                                <Typography onClick={() => { setValue(results.indexOf("Artists") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
+                                            </Grid>
+                                        ): undefined
+                                    }
+                                </Grid>
+                            ) : undefined
+                        }
                         <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                            {artists.map((artirst: ArtistResponse) => (
+                            {artists.slice(0, value === 0 ? Math.min(artists.length, MAX_CARD_COUNT) : artists.length).map((artirst: ArtistResponse) => (
                                 <Grid item key={artirst.artist_id} xs={1} sm={1} md={1} lg={1} xl={1}>
                                     <Card id={artirst.artist_id} imgSrc={artirst.coverImg} title={artirst.name} description={"Artist"} link="/artist" />
                                 </Grid>
                             ))}
                         </Grid>
                     </>
-                    : undefined
+                ) : undefined
+            }
+        </>
+    );
+    const renderedContent = (
+        <>
+            <Tabs sx={{ paddingBottom: 2 }} value={value} onChange={handleChangeTab}>
+                <Tab label="All" {...a11yProps(0)} />
+                {
+                    results.map((res, index) => (
+                        <Tab key={index} label={res} value={index + 1} />
+                    ))
+                }
+            </Tabs>
+            <TabPanel value={value} index={0}>
+                {renderedTableSongs}
+                {renderedAlbums}
+                {renderedArtists}
+                {renderedPlaylists}
+            </TabPanel>
+            {
+                results.map((item, index) => (
+                    <TabPanel key={index} value={value} index={index + 1}>
+                        {
+                            (item === "Playlists" ? renderedPlaylists :
+                                (item === "Albums" ? renderedAlbums :
+                                    (item === "Artists" ? renderedArtists :
+                                        renderedTableSongs)))
+                        }
+                    </TabPanel>
+                ))
             }
         </>
     );
@@ -252,7 +468,8 @@ const Search = () => {
             <Grid item marginLeft="203px" height="100%" width="100%">
                 {renderedTopbar}
                 <Box sx={{ px: 4, pt: 3 }}>
-                    {renderedContent}
+                    {results.length > 0 ? renderedContent : 
+                    (input.length > 0 ? renderedNotFoundResults : renderedUserSearch)}
                 </Box>
                 <Box height="120px" width="100%" />
             </Grid>

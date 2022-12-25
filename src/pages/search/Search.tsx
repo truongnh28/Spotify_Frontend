@@ -1,10 +1,10 @@
-import { AppBar, Box, Button, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from "@mui/material";
+import { AppBar, Box, Button, Grid, IconButton, InputAdornment, Menu, MenuItem, Modal, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState, MouseEvent, ChangeEvent } from "react";
+import React, { useState, MouseEvent, ChangeEvent, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectUser, logout } from "../../features/auth/authSlice";
 import { resetState, selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
-import { search } from "../../services/search";
+import { search, searchByAudio } from "../../services/search";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { ArtistResponse } from "../../models/ArtistResponse";
 import { PlaylistExpandResponse } from "../../models/PlaylistResponse";
@@ -15,13 +15,16 @@ import Nav from "../../components/Nav";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LikeButton from "../../components/LikeButton";
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import ClearIcon from '@mui/icons-material/Clear';
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import ClearIcon from "@mui/icons-material/Clear";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import MicIcon from '@mui/icons-material/Mic';
+import MicIcon from "@mui/icons-material/Mic";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import { useReactMediaRecorder } from "react-media-recorder";
 
 
 const styleAppBar = {
@@ -92,6 +95,18 @@ const styleRow = {
     }
 }
 
+const styleModal = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+}
+
 const Card = ({ id, imgSrc, title, description, link }: { id: number, imgSrc: string, title: string, description: string; link: string }) => {
     const navigate = useNavigate();
     const handleClickCard = () => {
@@ -139,7 +154,7 @@ const TabPanel = (props: TabPanelProps) => {
 const a11yProps = (index: number) => {
     return {
         id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
+        "aria-controls": `simple-tabpanel-${index}`,
     }
 }
 
@@ -147,12 +162,52 @@ const Search = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [openModal, setOpenModal] = useState(false);
     const [input, setInput] = useState("");
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
     const [artists, setArtists] = useState([] as ArtistResponse[]);
     const [playlists, setPlaylists] = useState([] as PlaylistExpandResponse[]);
     const [albums, setAlbums] = useState([] as AlbumExpandResponse[]);
     const [value, setValue] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+    const [seconds, setSeconds] = useState(0);
+    const [isRecord, setIsRecord] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const { startRecording, stopRecording } = useReactMediaRecorder({
+        audio: true,
+        onStop(blobUrl, blob) {
+            setIsActive(false);
+            if (blob.size <= 21000) {
+                setErrorMessage("Your audio record must be more 3 seconds");
+                setSeconds(0);
+            } else {
+                setSeconds(0);
+                searchByAudio(blob).then((res) => {
+                    console.log(res);
+                });
+            }
+        },
+        onStart() {
+            setIsActive(true);
+            setErrorMessage("");
+        }
+    });
+    useEffect(() => {
+        let timer: any = null;
+        if (isActive) {
+            if (seconds === 10) {
+                setIsRecord(false);
+                stopRecording();
+            } else {
+                timer = setInterval(() => {
+                    setSeconds((seconds) => seconds + 1);
+                }, 1000)
+            }
+        }
+        return () => {
+            clearInterval(timer);
+        }
+    }, [isActive, seconds, stopRecording]);
     const user = useAppSelector(selectUser);
     const playing = useAppSelector(selectPlaying);
     const currentSong = useAppSelector(selectCurrentSong);
@@ -195,6 +250,24 @@ const Search = () => {
     const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     }
+    const handleOpenModal = () => setOpenModal(true);
+    const handleCloseModal = () => {
+        stopRecording();
+        setErrorMessage("");
+        setIsRecord(false);
+        setIsActive(false);
+        setSeconds(0);
+        setOpenModal(false);
+    }
+    const handleToggleRecord = (prevState: boolean) => {
+        if (prevState) {
+            setIsRecord(false);
+            stopRecording();
+        } else {
+            setIsRecord(true);
+            startRecording();
+        }
+    }
     const isLoggedIn = user.username.length > 0;
     const open = Boolean(anchorEl);
     let results: string[] = [];
@@ -222,14 +295,31 @@ const Search = () => {
             endAdornment={
                 <>
                     {input.length > 0 ? (
-                        <IconButton onClick={() => {setInput("")}}>
+                        <IconButton onClick={() => { setInput("") }}>
                             <ClearIcon />
                         </IconButton>
-                    ): undefined}
+                    ) : undefined}
                     <InputAdornment position="end">
-                        <IconButton>
+                        <IconButton onClick={handleOpenModal}>
                             <MicIcon />
                         </IconButton>
+                        <Modal
+                            open={openModal}
+                            onClose={handleCloseModal}
+                        >
+                            <Box sx={styleModal}>
+                                <Typography variant="h6" component="h2">
+                                    Record audio to search your songs
+                                </Typography>
+                                <Stack paddingTop={2} direction="row" spacing={2} justifyContent="center" alignItems="center">
+                                    <IconButton size="large" sx={{ padding: 0 }} onClick={() => handleToggleRecord(isRecord)}>
+                                        {isRecord ? <StopCircleIcon /> : <PlayCircleIcon />}
+                                    </IconButton>
+                                    <Typography variant="h6">{seconds}s</Typography>
+                                </Stack>
+                                <Typography>{errorMessage}</Typography>
+                            </Box>
+                        </Modal>
                     </InputAdornment>
                 </>
             }

@@ -1,0 +1,1 @@
+export const SEND_AUDIO = "http://localhost:8080/upload";

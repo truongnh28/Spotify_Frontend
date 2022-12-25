@@ -1,3 +1,4 @@
+import axios from "axios";
 import { AlbumExpandResponse, AlbumResponse } from "../models/AlbumResponse";
 import { ArtistResponse } from "../models/ArtistResponse";
 import { PlaylistExpandResponse, PlaylistResponse } from "../models/PlaylistResponse";
@@ -6,6 +7,7 @@ import { getAlbumByName, getAllAlbum } from "./albums";
 import { getAllArtist, getArtistsByName } from "./artists";
 import { getPlaylistByName } from "./playlists";
 import { getSongsByName } from "./songs";
+import { SEND_AUDIO } from "../api/searchByAudio";
 export const search = async (name: string) => {
     const responses = await Promise.all([getSongsByName(name), getAlbumByName(name), getArtistsByName(name), getPlaylistByName(name), getAllArtist(), getAllAlbum()]);
     const songsByName: SongResponse[] = responses[0].data.songs;
@@ -41,4 +43,9 @@ export const search = async (name: string) => {
         resultArtists.push(artist);
     })
     return [resultSongs, resultAlbums, resultArtists, resultPlaylists];
+}
+export const searchByAudio = async (file: Blob) => {
+    const formData = new FormData();
+    formData.append("files", file);
+    return await axios.post(SEND_AUDIO, formData);
 }

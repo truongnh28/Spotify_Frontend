@@ -36,7 +36,7 @@ export const FIRST_NAV = [
     },
     { 
         name: "Your Library",
-        link: "/collection/playlist",
+        link: "/developing",
         icon: {
             current: <LibraryMusicIcon />, 
             notCurrent: <LibraryMusicOutlinedIcon />
@@ -47,7 +47,7 @@ export const FIRST_NAV = [
 export const SECOND_NAV = [
     {
         name: "Create Playlist",
-        link: "/undeveloped-features",
+        link: "/developing",
         icon: <AddBoxIcon />,
     },
     {

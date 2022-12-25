@@ -14,6 +14,7 @@ import Playlist from "./pages/playlist/Playlist";
 import MusicPlayer from "./components/MusicPlayer";
 import React from "react";
 import LikedSong from "./pages/likedSong/LikedSong";
+import Developing from "./pages/developing/Developing";
 function App() {
     const dispatch = useAppDispatch();
     const user = getUserFromLocalStorage();
@@ -62,6 +63,12 @@ function App() {
                                 <div>
                                     <MusicPlayer />
                                     <LikedSong />
+                                </div>
+                            }/>
+                            <Route path="/developing" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <Developing />
                                 </div>
                             }/>
                             <Route path="/search" element={

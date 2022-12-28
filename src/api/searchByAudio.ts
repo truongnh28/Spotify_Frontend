@@ -1,1 +1,1 @@
-export const SEND_AUDIO = "http://localhost:8080/upload";
+export const SEND_AUDIO = "http://127.0.0.1:5000/find_song";

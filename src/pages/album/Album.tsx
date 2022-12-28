@@ -105,9 +105,9 @@ const Album = () => {
                             <IconButton color="success" style={{ height: "56px", width: "56px" }}>
                                 <PlayCircleIcon style={{ height: "56px", width: "56px" }} />
                             </IconButton>
-                            <IconButton style={{ height: "56px", width: "56px" }}>
+                            {/* <IconButton style={{ height: "56px", width: "56px" }}>
                                 <FavoriteBorderIcon style={{ height: "56px", width: "56px" }} />
-                            </IconButton>
+                            </IconButton> */}
                         </Stack>
                     </Box>
                     <Box>

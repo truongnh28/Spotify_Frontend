@@ -66,9 +66,9 @@ const Home = () => {
                 <Grid item>
                     <Typography fontSize="1.5rem">Playlists</Typography>
                 </Grid>
-                <Grid item>
+                {/* <Grid item>
                     <Typography fontSize="0.75rem">SHOW ALL</Typography>
-                </Grid>
+                </Grid> */}
             </Grid>
             <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
                 {playlists.map((playlist: PlaylistResponse) => (
@@ -81,9 +81,9 @@ const Home = () => {
                 <Grid item>
                     <Typography fontSize="1.5rem">Albums</Typography>
                 </Grid>
-                <Grid item>
+                {/* <Grid item>
                     <Typography fontSize="0.75rem">SHOW ALL</Typography>
-                </Grid>
+                </Grid> */}
             </Grid>
             <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
                 {albums.map((album: AlbumExpandResponse) => (
@@ -96,9 +96,9 @@ const Home = () => {
                 <Grid item>
                     <Typography fontSize="1.5rem">Artists</Typography>
                 </Grid>
-                <Grid item>
+                {/* <Grid item>
                     <Typography fontSize="0.75rem">SHOW ALL</Typography>
-                </Grid>
+                </Grid> */}
             </Grid>
             <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
                 {artists.map((artirst: ArtistResponse) => (

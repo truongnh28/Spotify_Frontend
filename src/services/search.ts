@@ -46,6 +46,6 @@ export const search = async (name: string) => {
 }
 export const searchByAudio = async (file: Blob) => {
     const formData = new FormData();
-    formData.append("files", file);
+    formData.append("file", file);
     return await axios.post(SEND_AUDIO, formData);
 }

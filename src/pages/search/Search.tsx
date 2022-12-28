@@ -182,9 +182,9 @@ const Search = () => {
                 setSeconds(0);
             } else {
                 setSeconds(0);
-                searchByAudio(blob).then((res) => {
-                    console.log(res);
-                });
+                // searchByAudio(blob).then((res) => {
+                //     console.log(res);
+                // });
             }
         },
         onStart() {

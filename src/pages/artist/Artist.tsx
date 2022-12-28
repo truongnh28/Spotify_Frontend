@@ -107,9 +107,9 @@ const Artist = () => {
                             <IconButton color="success" style={{ height: "56px", width: "56px" }}>
                                 <PlayCircleIcon style={{ height: "56px", width: "56px" }} />
                             </IconButton>
-                            <Button variant="outlined" color="inherit" style={{ height: "32px" }}>
+                            {/* <Button variant="outlined" color="inherit" style={{ height: "32px" }}>
                                 Follow
-                            </Button>
+                            </Button> */}
                         </Stack>
                     </Box>
                     <Box>

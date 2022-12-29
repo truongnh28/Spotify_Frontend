@@ -182,9 +182,10 @@ const Search = () => {
                 setSeconds(0);
             } else {
                 setSeconds(0);
-                // searchByAudio(blob).then((res) => {
-                //     console.log(res);
-                // });
+                const audioFile = new File([blob], "audio.wav", {type: "audio/wav"})
+                searchByAudio(audioFile).then((res) => {
+                    console.log(res);
+                });
             }
         },
         onStart() {
@@ -195,7 +196,7 @@ const Search = () => {
     useEffect(() => {
         let timer: any = null;
         if (isActive) {
-            if (seconds === 10) {
+            if (seconds === 15) {
                 setIsRecord(false);
                 stopRecording();
             } else {

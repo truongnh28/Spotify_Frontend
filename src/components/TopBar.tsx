@@ -79,8 +79,8 @@ const TopBar = () => {
                 <Button sx={styleButtonUser} startIcon={<AccountCircleIcon />} endIcon={<ExpandMoreIcon />} onClick={handleClickUser}>
                     {user.username}
                 </Button>
-                <Menu anchorEl={anchorEl} open={open} onClose={handleCloseUser}>
-                    <MenuItem href={`/user/${user.code}`} onClick={() => handleCloseUser(false)}>Profile</MenuItem>
+                <Menu anchorEl={anchorEl} open={open} onClose={() => handleCloseUser(false)}>
+                    <MenuItem onClick={() => handleCloseUser(false)}>Profile</MenuItem>
                     <MenuItem onClick={() => handleCloseUser(true)}>Logout</MenuItem>
                 </Menu>
             </div>

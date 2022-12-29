@@ -15,6 +15,9 @@ import MusicPlayer from "./components/MusicPlayer";
 import React from "react";
 import LikedSong from "./pages/likedSong/LikedSong";
 import Developing from "./pages/developing/Developing";
+import PlaylistSection from "./pages/section/PlaylistSection";
+import AlbumSection from "./pages/section/AlbumSection";
+import ArtistSection from "./pages/section/ArtistSection";
 function App() {
     const dispatch = useAppDispatch();
     const user = getUserFromLocalStorage();
@@ -77,6 +80,24 @@ function App() {
                                     <Search />
                                 </div>
                             }/>
+                            <Route path="/section/playlist" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <PlaylistSection />
+                                </div>
+                            }/>
+                            <Route path="/section/album" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <AlbumSection />
+                                </div>
+                            }/>
+                            <Route path="/section/artist" element={
+                                <div>
+                                    <MusicPlayer />
+                                    <ArtistSection />
+                                </div>
+                            } />
                             {!isLoggedIn && <Route path="/login" element={<Login />} />}
                             {!isLoggedIn && <Route path="/signup" element={<SignUp />} />}
                         </Routes>

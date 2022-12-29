@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectPlaying, selectCurrentSong, togglePlaying, setCurrentSong, setSongList } from "../../features/player/playerSlice";
+import { selectPlaying, selectCurrentSong, togglePlaying, setCurrentSong, setSongList, selectSongList } from "../../features/player/playerSlice";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { getSongsInfoOfLikedSong } from "../../services/songs";
 import { selectUser } from "../../features/auth/authSlice";
@@ -18,6 +18,7 @@ import likedSongImg from "../../assets/liked-songs.png";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import TopBar from "../../components/TopBar";
+import { isCurrentPlaylist } from "../../utils/isCurrentPlaylist";
 
 const styleRow = {
     "&:hover": {
@@ -61,6 +62,7 @@ const LikeButton = ({ song_id }: { song_id: number }) => {
 const LikedSong = () => {
     const dispatch = useAppDispatch();
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
+    const songList = useAppSelector(selectSongList);
     const user = useAppSelector(selectUser);
     const playing = useAppSelector(selectPlaying);
     const currentSong = useAppSelector(selectCurrentSong);
@@ -83,9 +85,42 @@ const LikedSong = () => {
         }
     }
     const toggleBigPlayingButton = () => {
-        dispatch(togglePlaying(playing));
+        if (!isTrue) {
+            dispatch(setSongList(songs));
+            dispatch(togglePlaying(false));
+            dispatch(setCurrentSong(0));
+        } else {
+            dispatch(togglePlaying(playing));
+        }
     }
-    const renderedSongs = songs.map((song: SongExpandResponse, index) => {
+    const isTrue = isCurrentPlaylist(songs, songList);
+    let renderedSongs = songs.map((song: SongExpandResponse, index) => {
+        const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
+        const time = convertToMinuteAndSecond(length);
+        return (
+            <TableRow key={song_id} sx={styleRow}>
+                <TableCell sx={{ paddingX: 0 }}>
+                    <IconButton onClick={() => handlePlayButton(index)}>
+                        <PlayArrowIcon />
+                    </IconButton>
+                </TableCell>
+                <TableCell>
+                    <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                    <Link to={`/artist/${artist_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none"}}>{artist_name}</Link>
+                </TableCell>
+                <TableCell>
+                    <Link to={`/album/${album_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none"}}>{album_name}</Link>
+                </TableCell>
+                <TableCell>
+                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                        <LikeButton song_id={song_id} />
+                        <Typography>{time}</Typography>
+                    </Stack>
+                </TableCell>
+            </TableRow>
+        );
+    });
+    renderedSongs = songs.map((song: SongExpandResponse, index) => {
         const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
         const time = convertToMinuteAndSecond(length);
         return (
@@ -135,7 +170,7 @@ const LikedSong = () => {
                 <Box height="104px">
                     <Stack paddingX={4} paddingY={3} direction="row" justifyContent="flex-start" spacing={4}>
                         <IconButton color="success" style={{ height: "56px", width: "56px" }} onClick={toggleBigPlayingButton}>
-                            { playing ?
+                            { (playing && isTrue) ?
                                 <PauseCircleIcon style={{height: "56px", width: "56px"}} />
                             : <PlayCircleIcon style={{ height: "56px", width: "56px" }} /> }
                         </IconButton>

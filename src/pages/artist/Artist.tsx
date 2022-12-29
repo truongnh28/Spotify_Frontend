@@ -14,8 +14,9 @@ import { ArtistResponse } from "../../models/ArtistResponse";
 import { getSingleArtist } from "../../services/artists";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
+import { selectCurrentSong, selectPlaying, selectSongList, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 import TopBar from "../../components/TopBar";
+import { isCurrentPlaylist } from "../../utils/isCurrentPlaylist";
 
 const About = ({ artist }: { artist: ArtistResponse }) => {
     return (
@@ -39,6 +40,7 @@ const Artist = () => {
     const dispatch = useAppDispatch();
     const [artist, setArtist] = useState(null);
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
+    const songList = useAppSelector(selectSongList);
     const playing = useAppSelector(selectPlaying);
     const currentSong = useAppSelector(selectCurrentSong);
     useEffect(() => {
@@ -63,36 +65,67 @@ const Artist = () => {
         }
     }
     const toggleBigPlayingButton = () => {
-        dispatch(togglePlaying(playing));
+        if (!isTrue) {
+            dispatch(setSongList(songs));
+            dispatch(togglePlaying(false));
+            dispatch(setCurrentSong(0));
+        } else {
+            dispatch(togglePlaying(playing));
+        }
     }
-    const renderedSongs = songs.map((song: SongExpandResponse, index) => {
-        const { song_id, name, length } = song;        
-        const time = convertToMinuteAndSecond(length);
-        return (
-            <TableRow key={song_id} sx={styleRow}>
-                <TableCell sx={{paddingX: 0}}>
-                    <IconButton onClick={() => handlePlayButton(index)}>
-                        {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell>
-                    <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
-                </TableCell>
-                <TableCell>
-                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
-                        <LikeButton song_id={song_id} />
-                        <Typography>{time}</Typography>
-                    </Stack>
-                </TableCell>
-            </TableRow>
-        );
-    });
+    const isTrue = isCurrentPlaylist(songs, songList);
     let renderedArtist = null;
     if (artist) {
         renderedArtist = artist as ArtistResponse;
     }
     let contentRendered = <Typography>Not found specific artist</Typography>
     if (artist && renderedArtist) {
+        let renderedSongs = songs.map((song: SongExpandResponse, index) => {
+            const { song_id, name, length } = song;
+            const time = convertToMinuteAndSecond(length);
+            return (
+                <TableRow key={song_id} sx={styleRow}>
+                    <TableCell sx={{ paddingX: 0 }}>
+                        <IconButton onClick={() => handlePlayButton(index)}>
+                            <PlayArrowIcon />
+                        </IconButton>
+                    </TableCell>
+                    <TableCell>
+                        <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                    </TableCell>
+                    <TableCell>
+                        <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                            <LikeButton song_id={song_id} />
+                            <Typography>{time}</Typography>
+                        </Stack>
+                    </TableCell>
+                </TableRow>
+            );
+        });
+        if (isTrue) {
+            renderedSongs = songs.map((song: SongExpandResponse, index) => {
+                const { song_id, name, length } = song;
+                const time = convertToMinuteAndSecond(length);
+                return (
+                    <TableRow key={song_id} sx={styleRow}>
+                        <TableCell sx={{ paddingX: 0 }}>
+                            <IconButton onClick={() => handlePlayButton(index)}>
+                                {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
+                            </IconButton>
+                        </TableCell>
+                        <TableCell>
+                            <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                                <LikeButton song_id={song_id} />
+                                <Typography>{time}</Typography>
+                            </Stack>
+                        </TableCell>
+                    </TableRow>
+                );
+            });
+        }
         contentRendered = (
             <>
                 <Stack paddingX={4} paddingBottom={3}>
@@ -109,9 +142,9 @@ const Artist = () => {
                     <Box height="104px">
                         <Stack paddingX={4} paddingY={3} direction="row" justifyContent="flex-start" spacing={4} alignItems="center">
                             <IconButton color="success" style={{ height: "56px", width: "56px" }} onClick={toggleBigPlayingButton}>
-                                { playing ? 
-                                <PauseCircleIcon style={{height: "56px", width: "56px"}}/> :
-                                <PlayCircleIcon style={{ height: "56px", width: "56px" }} /> }
+                                {playing ?
+                                    <PauseCircleIcon style={{ height: "56px", width: "56px" }} /> :
+                                    <PlayCircleIcon style={{ height: "56px", width: "56px" }} />}
                             </IconButton>
                             {/* <Button variant="outlined" color="inherit" style={{ height: "32px" }}>
                                 Follow

@@ -15,8 +15,9 @@ import { getSongsInfoOfPlaylist } from "../../services/songs";
 import { getSinglePlaylist } from "../../services/playlists";
 import { convertToMinuteAndSecond } from "../../utils/convert";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
+import { selectCurrentSong, selectPlaying, selectSongList, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 import TopBar from "../../components/TopBar";
+import { isCurrentPlaylist } from "../../utils/isCurrentPlaylist";
 
 const styleRow = {
     "&:hover": {
@@ -29,6 +30,7 @@ const Playlist = () => {
     const dispatch = useAppDispatch();
     const [playlist, setPlaylist] = useState(null);
     const [songs, setSongs] = useState([] as SongExpandResponse[]);
+    const songList = useAppSelector(selectSongList);
     const playing = useAppSelector(selectPlaying);
     const currentSong = useAppSelector(selectCurrentSong);
     useEffect(() => {
@@ -52,41 +54,76 @@ const Playlist = () => {
             }
         }
     }
-    const toggleBigPlayingButton = () => {
-        dispatch(togglePlaying(playing));
+    const togglePlayPlaylistButton = () => {
+        if (!isTrue) {
+            dispatch(setSongList(songs));
+            dispatch(togglePlaying(false));
+            dispatch(setCurrentSong(0));
+        } else {
+            dispatch(togglePlaying(playing));
+        }
     }
-    const renderedSongs = songs.map((song: SongExpandResponse, index) => {
-        const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
-        const time = convertToMinuteAndSecond(length);
-        return (
-            <TableRow key={song_id} sx={styleRow}>
-                <TableCell sx={{paddingX: 0}}>
-                    <IconButton onClick={() => handlePlayButton(index)}>
-                        {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell>
-                    <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
-                    <Link to={`/artist/${artist_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none"}}>{artist_name}</Link>
-                </TableCell>
-                <TableCell>
-                    <Link to={`/album/${album_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none"}}>{album_name}</Link>
-                </TableCell>
-                <TableCell>
-                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
-                        <LikeButton song_id={song_id} />
-                        <Typography>{time}</Typography>
-                    </Stack>
-                </TableCell>
-            </TableRow>
-        );
-    })
+    const isTrue = isCurrentPlaylist(songs, songList);
     let renderedPlaylist = null;
     if (playlist) {
         renderedPlaylist = playlist as PlaylistResponse;
     }
     let contentRendered = <Typography fontWeight="bold" fontSize="1.5rem">Not Found Specific Playlist</Typography>;
     if (playlist && renderedPlaylist) {
+        let renderedSongs = songs.map((song: SongExpandResponse, index) => {
+            const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
+            const time = convertToMinuteAndSecond(length);
+            return (
+                <TableRow key={song_id} sx={styleRow}>
+                    <TableCell sx={{ paddingX: 0 }}>
+                        <IconButton onClick={() => handlePlayButton(index)}>
+                            <PlayArrowIcon />
+                        </IconButton>
+                    </TableCell>
+                    <TableCell>
+                        <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                        <Link to={`/artist/${artist_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none" }}>{artist_name}</Link>
+                    </TableCell>
+                    <TableCell>
+                        <Link to={`/album/${album_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none" }}>{album_name}</Link>
+                    </TableCell>
+                    <TableCell>
+                        <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                            <LikeButton song_id={song_id} />
+                            <Typography>{time}</Typography>
+                        </Stack>
+                    </TableCell>
+                </TableRow>
+            );
+        });
+        if (isTrue) {
+            renderedSongs = songs.map((song: SongExpandResponse, index) => {
+                const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
+                const time = convertToMinuteAndSecond(length);
+                return (
+                    <TableRow key={song_id} sx={styleRow}>
+                        <TableCell sx={{ paddingX: 0 }}>
+                            <IconButton onClick={() => handlePlayButton(index)}>
+                                {(currentSong === index && playing) ? <PauseIcon /> : <PlayArrowIcon />}
+                            </IconButton>
+                        </TableCell>
+                        <TableCell>
+                            <Typography fontSize="1rem" color={(currentSong === index && playing) ? "green" : "white"}>{name}</Typography>
+                            <Link to={`/artist/${artist_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none" }}>{artist_name}</Link>
+                        </TableCell>
+                        <TableCell>
+                            <Link to={`/album/${album_id}`} style={{ fontSize: "0.875rem", color: "#b3b3b3", textDecoration: "none" }}>{album_name}</Link>
+                        </TableCell>
+                        <TableCell>
+                            <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={3}>
+                                <LikeButton song_id={song_id} />
+                                <Typography>{time}</Typography>
+                            </Stack>
+                        </TableCell>
+                    </TableRow>
+                );
+            })
+        }
         contentRendered = (
             <>
                 <Stack paddingX={4} paddingBottom={3}>
@@ -106,10 +143,10 @@ const Playlist = () => {
                 <Box>
                     <Box height="104px">
                         <Stack paddingX={4} paddingY={3} direction="row" justifyContent="flex-start" spacing={4}>
-                            <IconButton color="success" style={{ height: "56px", width: "56px" }} onClick={toggleBigPlayingButton}>
-                                { playing ?
-                                    <PauseCircleIcon style={{ height: "56px", width: "56px" }}/>
-                                : <PlayCircleIcon style={{ height: "56px", width: "56px" }} /> }
+                            <IconButton color="success" style={{ height: "56px", width: "56px" }} onClick={togglePlayPlaylistButton}>
+                                {(playing && isTrue) ?
+                                    <PauseCircleIcon style={{ height: "56px", width: "56px" }} />
+                                    : <PlayCircleIcon style={{ height: "56px", width: "56px" }} />}
                             </IconButton>
                             <IconButton style={{ height: "56px", width: "56px" }}>
                                 <FavoriteBorderIcon style={{ height: "56px", width: "56px" }} />

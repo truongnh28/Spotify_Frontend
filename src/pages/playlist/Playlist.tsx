@@ -2,6 +2,7 @@ import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableH
 import { Link, useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -51,7 +52,9 @@ const Playlist = () => {
             }
         }
     }
-
+    const toggleBigPlayingButton = () => {
+        dispatch(togglePlaying(playing));
+    }
     const renderedSongs = songs.map((song: SongExpandResponse, index) => {
         const { song_id, name, length, album_id, artist_id, album_name, artist_name } = song;
         const time = convertToMinuteAndSecond(length);
@@ -103,8 +106,10 @@ const Playlist = () => {
                 <Box>
                     <Box height="104px">
                         <Stack paddingX={4} paddingY={3} direction="row" justifyContent="flex-start" spacing={4}>
-                            <IconButton color="success" style={{ height: "56px", width: "56px" }}>
-                                <PlayCircleIcon style={{ height: "56px", width: "56px" }} />
+                            <IconButton color="success" style={{ height: "56px", width: "56px" }} onClick={toggleBigPlayingButton}>
+                                { playing ?
+                                    <PauseCircleIcon style={{ height: "56px", width: "56px" }}/>
+                                : <PlayCircleIcon style={{ height: "56px", width: "56px" }} /> }
                             </IconButton>
                             <IconButton style={{ height: "56px", width: "56px" }}>
                                 <FavoriteBorderIcon style={{ height: "56px", width: "56px" }} />

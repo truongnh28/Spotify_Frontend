@@ -1,9 +1,10 @@
-import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, Button, Paper, TableCell, TableRow } from "@mui/material";
+import { Grid, Box, Stack, Typography, IconButton, TableContainer, Table, TableBody, Paper, TableCell, TableRow } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Nav from "../../components/Nav";
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 import Avatar from "@mui/material/Avatar";
 import LikeButton from "../../components/LikeButton";
 import { useEffect, useState } from "react";
@@ -61,6 +62,9 @@ const Artist = () => {
             }
         }
     }
+    const toggleBigPlayingButton = () => {
+        dispatch(togglePlaying(playing));
+    }
     const renderedSongs = songs.map((song: SongExpandResponse, index) => {
         const { song_id, name, length } = song;        
         const time = convertToMinuteAndSecond(length);
@@ -104,8 +108,10 @@ const Artist = () => {
                 <Box>
                     <Box height="104px">
                         <Stack paddingX={4} paddingY={3} direction="row" justifyContent="flex-start" spacing={4} alignItems="center">
-                            <IconButton color="success" style={{ height: "56px", width: "56px" }}>
-                                <PlayCircleIcon style={{ height: "56px", width: "56px" }} />
+                            <IconButton color="success" style={{ height: "56px", width: "56px" }} onClick={toggleBigPlayingButton}>
+                                { playing ? 
+                                <PauseCircleIcon style={{height: "56px", width: "56px"}}/> :
+                                <PlayCircleIcon style={{ height: "56px", width: "56px" }} /> }
                             </IconButton>
                             {/* <Button variant="outlined" color="inherit" style={{ height: "32px" }}>
                                 Follow

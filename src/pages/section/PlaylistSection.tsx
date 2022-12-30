@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
 import TopBar from "../../components/TopBar";
 import defaultImage from "../../assets/default-image.png";
-import { MAX_CARD_COUNT } from "../../constants/UI";
 import { PlaylistResponse } from "../../models/PlaylistResponse";
 import { getAllPlaylist } from "../../services/playlists";
+import "./Section.css";
 
 const styleImgCard = {
     width: "100%",
@@ -34,7 +34,7 @@ const Card = ({ id, imgSrc, title, description, link }: { id: number, imgSrc: st
                 <div>
                     <img src={imgSrc.length > 0 ? imgSrc : defaultImage} alt="" style={styleImgCard} />
                 </div>
-                <b style={{ color: "white" }}>{title}</b>
+                <b className="clamp" style={{ color: "white" }}>{title}</b>
                 <div className="clamp">{description}</div>
             </div>
         </Button>
@@ -51,7 +51,7 @@ const PlaylistSection = () => {
     const renderedContent = (
         <>
             <Grid sx={{ pb: 2 }} container columns={{ xs: 3, sm: 3, md: 4, lg: 5, xl: 9 }} spacing={{ sm: 2, md: 3, lg: 3, xl: 3 }}>
-                {playlists.slice(0, Math.min(MAX_CARD_COUNT, playlists.length)).map((playlist: PlaylistResponse) => (
+                {playlists.map((playlist: PlaylistResponse) => (
                     <Grid item key={playlist.play_list_id} xs={1} sm={1} md={1} lg={1} xl={1}>
                         <Card id={playlist.play_list_id} imgSrc={playlist.cover_img} title={playlist.name} description={""} link="/playlist" />
                     </Grid>

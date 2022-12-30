@@ -69,7 +69,7 @@ const Home = () => {
                 </Grid>
                 {playlists.length > 5 ? (
                     <Grid item>
-                        <Link to={`/section/playlist`} style={{ textDecoration: "none", fontSize: "0.75rem" }} >SHOW ALL</Link>
+                        <Link to={`/section/playlist`} style={{ textDecoration: "none", fontSize: "0.75rem", color: "white" }} >SHOW ALL</Link>
                     </Grid>
                 ) : undefined}
             </Grid>
@@ -86,7 +86,7 @@ const Home = () => {
                 </Grid>
                 {albums.length > 5 ? (
                     <Grid item>
-                        <Link to={`/section/album`} style={{ textDecoration: "none", fontSize: "0.75rem" }} >SHOW ALL</Link>
+                        <Link to={`/section/album`} style={{ textDecoration: "none", fontSize: "0.75rem", color: "white" }} >SHOW ALL</Link>
                     </Grid>
                 ) : undefined}
             </Grid>
@@ -103,7 +103,7 @@ const Home = () => {
                 </Grid>
                 {artists.length > 5 ? (
                     <Grid item>
-                        <Link to={`/section/artist`} style={{ textDecoration: "none", fontSize: "0.75rem" }} >SHOW ALL</Link>
+                        <Link to={`/section/artist`} style={{ textDecoration: "none", fontSize: "0.75rem", color: "white" }} >SHOW ALL</Link>
                     </Grid>
                 ) : undefined}
             </Grid>

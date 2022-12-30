@@ -25,7 +25,14 @@ import MicIcon from "@mui/icons-material/Mic";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import { useReactMediaRecorder } from "react-media-recorder";
+import "./Search.css";
+import { getSongInfoById } from "../../services/songs";
 
+const styleShowAll = {
+    "&:hover": {
+        cursor: "pointer",
+    }
+}
 
 const styleAppBar = {
     height: "64px",
@@ -118,8 +125,8 @@ const Card = ({ id, imgSrc, title, description, link }: { id: number, imgSrc: st
                 <div>
                     <img src={imgSrc} alt="" style={styleImgCard} />
                 </div>
-                <b style={{ color: "white" }}>{title}</b>
-                <div className="clamp">{description}</div>
+                <b className="clamp-title" style={{ color: "white" }}>{title}</b>
+                <div className="clamp-description">{description}</div>
             </div>
         </Button>
     );
@@ -184,7 +191,15 @@ const Search = () => {
                 setSeconds(0);
                 const audioFile = new File([blob], "audio.wav", {type: "audio/wav"})
                 searchByAudio(audioFile).then((res) => {
-                    console.log(res);
+                    const index = res.data;
+                    if (index === 0) {
+                        setSongs([]);
+                    } else {
+                        getSongInfoById(index).then((res: SongExpandResponse) => {
+                            const listSong = [res];
+                            setSongs(listSong);
+                        });
+                    }
                 });
             }
         },
@@ -408,7 +423,7 @@ const Search = () => {
                                     {
                                         songs.length > MAX_SONGS_COUNT ? (
                                             <Grid item>
-                                                <Typography onClick={() => { setValue(results.indexOf("Songs") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
+                                                <Typography sx={styleShowAll} onClick={() => { setValue(results.indexOf("Songs") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
                                             </Grid>
                                         ) : undefined
                                     }
@@ -483,7 +498,7 @@ const Search = () => {
                                     {
                                         albums.length > MAX_SONGS_COUNT ? (
                                             <Grid item>
-                                                <Typography onClick={() => { setValue(results.indexOf("Albums") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
+                                                <Typography sx={styleShowAll} onClick={() => { setValue(results.indexOf("Albums") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
                                             </Grid>
                                         ) : undefined
                                     }
@@ -516,7 +531,7 @@ const Search = () => {
                                     {
                                         artists.length > MAX_SONGS_COUNT ? (
                                             <Grid item>
-                                                <Typography onClick={() => { setValue(results.indexOf("Artists") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
+                                                <Typography sx={styleShowAll} onClick={() => { setValue(results.indexOf("Artists") + 1) }} fontSize="0.75rem">SHOW ALL</Typography>
                                             </Grid>
                                         ) : undefined
                                     }

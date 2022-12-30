@@ -1,5 +1,5 @@
 import axios from "axios"
-import { GET_ALL_SONGS, GET_SONGS_BY_ALBUM, GET_SONGS_BY_ARTIST, GET_SONGS_BY_NAME, GET_SONGS_BY_PLAYLIST, GET_SONGS_LIKED_BY_USER } from "../api/songs"
+import { GET_ALL_SONGS, GET_SONGS_BY_ALBUM, GET_SONGS_BY_ARTIST, GET_SONGS_BY_NAME, GET_SONGS_BY_PLAYLIST, GET_SONGS_LIKED_BY_USER, GET_SONG_BY_ID } from "../api/songs"
 import { getAllAlbum } from "./albums";
 import { getAllArtist } from "./artists";
 import { SongExpandResponse, SongResponse } from "../models/SongResponse";
@@ -8,6 +8,10 @@ import { ArtistResponse } from "../models/ArtistResponse";
 
 export const getAllSongs = async () => {
     return await axios.get(`${GET_ALL_SONGS}`);
+}
+
+export const getSongById = async (songId: number) => {
+    return await axios.get(`${GET_SONG_BY_ID}/${songId}`);
 }
 
 export const getSongsByPlaylist = async (playlistId: number) => {
@@ -71,5 +75,19 @@ export const getSongsInfoOfLikedSong = async (userId: number) => {
         return result;
     } catch(error) {
         return [];
+    }
+}
+
+export const getSongInfoById = async (songId: number) => {
+    const responses = await Promise.all([getSongById(songId), getAllArtist(), getAllAlbum()]);
+    const song: SongResponse = responses[0].data.songs;
+    const artists: ArtistResponse[] = responses[1].data.artists;
+    const albums: AlbumResponse[] = responses[2].data.albums;
+    const artist = artists.find((artist: ArtistResponse) => artist.artist_id === song.artist_id);
+    const album = albums.find((album: AlbumResponse) => album.album_id === song.album_id);
+    return {
+        ...song,
+        artist_name: artist?.name,
+        album_name: album?.name,
     }
 }

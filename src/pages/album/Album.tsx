@@ -93,6 +93,7 @@ const Album = () => {
             );
         });
         if (isTrue) {
+            console.log(isTrue);
             renderedSongs = songs.map((song, index) => {
                 const { song_id, name, artist_id, artist_name, length } = song;
                 const time = convertToMinuteAndSecond(length);

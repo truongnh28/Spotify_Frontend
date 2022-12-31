@@ -80,14 +80,14 @@ export const getSongsInfoOfLikedSong = async (userId: number) => {
 
 export const getSongInfoById = async (songId: number) => {
     const responses = await Promise.all([getSongById(songId), getAllArtist(), getAllAlbum()]);
-    const song: SongResponse = responses[0].data.songs;
+    const song: SongResponse = responses[0].data.songs[0];
     const artists: ArtistResponse[] = responses[1].data.artists;
     const albums: AlbumResponse[] = responses[2].data.albums;
     const artist = artists.find((artist: ArtistResponse) => artist.artist_id === song.artist_id);
     const album = albums.find((album: AlbumResponse) => album.album_id === song.album_id);
-    return {
+    return [{
         ...song,
         artist_name: artist?.name,
         album_name: album?.name,
-    }
+    }]
 }

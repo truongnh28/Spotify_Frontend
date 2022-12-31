@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState, MouseEvent, ChangeEvent, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectUser, logout } from "../../features/auth/authSlice";
-import { resetState, selectCurrentSong, selectPlaying, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
+import { resetState, selectCurrentSong, selectPlaying, selectSongList, setCurrentSong, setSongList, togglePlaying } from "../../features/player/playerSlice";
 import { search, searchByAudio } from "../../services/search";
 import { SongExpandResponse } from "../../models/SongResponse";
 import { ArtistResponse } from "../../models/ArtistResponse";
@@ -27,6 +27,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import { useReactMediaRecorder } from "react-media-recorder";
 import "./Search.css";
 import { getSongInfoById } from "../../services/songs";
+import { isCurrentPlaylist } from "../../utils/isCurrentPlaylist";
 
 const styleShowAll = {
     "&:hover": {
@@ -180,6 +181,15 @@ const Search = () => {
     const [seconds, setSeconds] = useState(0);
     const [isRecord, setIsRecord] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [openNotFoundModal, setOpenNotFoundModal] = useState(false);
+    const songList = useAppSelector(selectSongList);
+    const user = useAppSelector(selectUser);
+    const playing = useAppSelector(selectPlaying);
+    const currentSong = useAppSelector(selectCurrentSong);
+    const handleCloseNotFoundModal = () => setOpenNotFoundModal(false);
+    const handleClickUser = (event: MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
     const { startRecording, stopRecording } = useReactMediaRecorder({
         audio: true,
         onStop(blobUrl, blob) {
@@ -189,15 +199,16 @@ const Search = () => {
                 setSeconds(0);
             } else {
                 setSeconds(0);
-                const audioFile = new File([blob], "audio.wav", {type: "audio/wav"})
+                setOpenModal(false);
+                const audioFile = new File([blob], "audio.wav", { type: "audio/wav" })
                 searchByAudio(audioFile).then((res) => {
-                    const index = res.data;
-                    if (index === 0) {
+                    const index = parseInt(res.data);
+                    if (index === -1) {
+                        setOpenNotFoundModal(true);
                         setSongs([]);
                     } else {
-                        getSongInfoById(index).then((res: SongExpandResponse) => {
-                            const listSong = [res];
-                            setSongs(listSong);
+                        getSongInfoById(index).then((res: SongExpandResponse[]) => {
+                            setSongs(res);
                         });
                     }
                 });
@@ -224,15 +235,20 @@ const Search = () => {
             clearInterval(timer);
         }
     }, [isActive, seconds, stopRecording]);
-    const user = useAppSelector(selectUser);
-    const playing = useAppSelector(selectPlaying);
-    const currentSong = useAppSelector(selectCurrentSong);
-    const handleClickUser = (event: MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
     const handlePlayButton = (index: number) => {
         if (currentSong === index) {
-            dispatch(togglePlaying(playing));
+            if (isCurrentPlaylist(songs, songList)) {
+                dispatch(togglePlaying(playing));
+            }
+            else {
+                if (playing === true)
+                    dispatch(setCurrentSong(index));
+                else {
+                    dispatch(setSongList(songs));
+                    dispatch(togglePlaying(playing));
+                    dispatch(setCurrentSong(index));
+                }
+            }
         } else {
             if (playing === true) {
                 dispatch(setCurrentSong(index));
@@ -296,6 +312,9 @@ const Search = () => {
             results.push("Playlists");
         if (albums.length > 0)
             results.push("Albums");
+    } else {
+        if (songs.length > 0)
+            results.push("Songs");
     }
     const renderedSearchField = (
         <OutlinedInput
@@ -593,6 +612,13 @@ const Search = () => {
                 </Box>
                 <Box height="120px" width="100%" />
             </Grid>
+            <Modal open={openNotFoundModal} onClose={handleCloseNotFoundModal}>
+                <Box sx={styleModal}>
+                    <Typography variant="h6" component="h2">
+                        Your song does not found
+                    </Typography>
+                </Box>
+            </Modal>
         </Grid>
     );
 }
